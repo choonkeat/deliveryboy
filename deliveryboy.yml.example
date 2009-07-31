@@ -1,0 +1,14 @@
+hostname: localhost
+inbox:
+  path: queue/inbox
+  plugins:
+    - plugins/mail_archiver.rb
+    - plugins/print_summary.rb
+outbox:
+  path: queue/outbox
+  plugins:
+    - plugins/mail_archiver.rb
+    - plugins/print_summary.rb
+smtp:
+  hostname: localhost
+  port: 25
