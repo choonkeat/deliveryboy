@@ -10,7 +10,7 @@ class Deliveryboy
       @mtime = File.stat(@path).mtime
       @terminated = false
       @plugins = (config["plugins"] || []).collect {|path| plugin_class(path).new(self) }
-      log "configured plugins: #{@plugins.inspect}"
+      logger.info "#{self.class.name} configured plugins: #{@plugins.collect {|p| p.class.name}.inspect}"
     end
 
     PLUGINS = {}
@@ -41,14 +41,12 @@ class Deliveryboy
           end # mtime unchanged?
           @mtime = newmtime
         end # filename.nil?
-        if block_given?
-          log "#{filename}: handling ..."
-          open(filename, &block) 
-        end
-        if @archive
-          archive_name = File.join(@archive, File.split(filename).last)
-          log "#{filename}: archiving to #{archive_name} ..."
-          File.rename filename, archive_name
+        begin
+          logger.info "#{filename}: #{self.class.name} handling ..."
+          open(filename, &block)
+        ensure
+          File.delete filename
+          logger.debug "#{filename}: #{self.class.name} removed ..."
         end
       end
     end

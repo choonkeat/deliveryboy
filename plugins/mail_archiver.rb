@@ -11,7 +11,7 @@ class MailArchiver
   def handle(tmail_object)
     filename = File.join(@dirname, "#{@prefix}-#{Time.now.to_f}-#{$$}.mail")
     open(filename, "w") {|f| f.write(tmail_object.to_s) }
-    log "saved at #{filename}"
+    logger.info "saved at #{filename}"
   end
 
   # optional stuff

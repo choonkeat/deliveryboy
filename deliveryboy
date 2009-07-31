@@ -9,12 +9,15 @@ require 'rubygems'
 require 'tmail'
 require 'net/smtp'
 require 'ftools'
+require 'logger'
 require 'yaml'
 
 class Deliveryboy
   include Loggable
 
   def initialize(config)
+    Loggable.logger = (config["logger"]["path"].to_s.strip == "") ? Logger.new(STDOUT) : Logger.new(config["logger"]["path"])
+    logger.level = config["logger"]["level"]
     @inbox  = Inbox.new(config["inbox"])
     @outbox = Outbox.new(config["outbox"])
     @smtp_host = config["smtp"]["hostname"]
@@ -39,8 +42,8 @@ class Deliveryboy
   end
 
   def run
-    trap("INT") { log "shutting down ..."; @inbox.terminated = @outbox.terminated = true; }
-    log "Trapping SIGINT ..."
+    trap("INT") { logger.info "shutting down ..."; @inbox.terminated = @outbox.terminated = true; }
+    logger.info "Ctrl-C to terminate"
     threads = []
     # read all mails in inbox, and invoke callbacks
     threads << Thread.new do
@@ -56,9 +59,9 @@ class Deliveryboy
         self.deliver(mail)
       end
     end
-    log "#{threads.length} threads #{threads.inspect} running ..."
-    threads.collect {|t| t.join; log "thread #{t.inspect} done" }
-    log "#{threads.length} threads done"
+    logger.debug "#{threads.length} threads #{threads.inspect} running ..."
+    threads.collect {|t| t.join; logger.debug "thread #{t.inspect} done" }
+    logger.debug "#{threads.length} threads done"
   end
 
   # to prettify logging output

@@ -12,3 +12,6 @@ outbox:
 smtp:
   hostname: localhost
   port: 25
+logger:
+  level: 0
+  path: 

@@ -6,7 +6,7 @@ class PrintSummary
   end
 
   def handle(tmail_object)
-    log "from:#{tmail_object.from} subject:#{tmail_object.subject} (#{tmail_object.to_s.length} bytes)"
+    logger.info "from:#{tmail_object.from} subject:#{tmail_object.subject} (#{tmail_object.to_s.length} bytes)"
   end
 
   # optional stuff

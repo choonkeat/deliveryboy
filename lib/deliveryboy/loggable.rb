@@ -1,7 +1,10 @@
 class Deliveryboy
   module Loggable
-    def log(str)
-      puts "#{$$} [#{self.class.name}] #{str}"
+    def self.logger=(val)
+      @@logger=val
+    end
+    def logger
+      @@logger
     end
   end
 end
