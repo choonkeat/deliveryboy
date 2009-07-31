@@ -36,7 +36,7 @@ class Deliveryboy
       while not @terminated
         while (filename = self.get_filename).nil?
           while (newmtime = File.stat(@path).mtime) == @mtime
-            sleep 1
+            sleep 5
             return if @terminated
           end # mtime unchanged?
           @mtime = newmtime
