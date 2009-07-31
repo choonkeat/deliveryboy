@@ -34,6 +34,9 @@ class Deliveryboy
         mail.destinations
       )
     end
+  rescue Exception, Errno::ECONNREFUSED
+    logger.error $!
+    logger.error $!.backtrace
   # rescue Errno::ECONNREFUSED
   #   raise if smtp_host
   #   mail.destinations.each do |single_destination|
