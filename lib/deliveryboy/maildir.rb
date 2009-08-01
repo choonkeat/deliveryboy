@@ -8,16 +8,16 @@ class Deliveryboy
       File.makedirs(@path)
       @mtime = File.stat(@path).mtime
       @terminated = false
-      @plugins = (config["plugins"] || []).collect {|hash| plugin_class(hash['path']).new(hash) }
-      logger.info "#{@path} configured plugins: #{@plugins.collect {|p| p.class.name}.inspect}"
+      @plugins = (config["plugins"] || []).collect {|hash| plugin_class(hash['script']).new(hash) }
+      logger.info "#{@path} configured plugins: #{@plugins.collect {|p| p.class.name}.join(', ')}"
     end
 
     PLUGINS = {}
-    module Plugin; def self.included(klass); PLUGINS[PLUGINS[:last_path]] = klass; end; end
-    def plugin_class(path)
-      PLUGINS[:last_path] = path
-      require path
-      PLUGINS[path]
+    module Plugin; def self.included(klass); PLUGINS[PLUGINS[:last_script]] = klass; end; end
+    def plugin_class(script)
+      PLUGINS[:last_script] = script
+      require script
+      PLUGINS[script]
     end
 
     def handle(mail)
@@ -48,13 +48,15 @@ class Deliveryboy
           @mtime = newmtime
         end # filename.nil?
         begin
-          logger.info "#{filename}: handling ..."
+          logger.info "handling #{filename}"
           open(filename) {|io| self.handle(TMail::Mail.parse(io.read))}
         ensure
           File.delete filename
-          logger.debug "#{filename}: removed ..."
+          logger.debug "removed #{filename}"
         end
       end
+    ensure
+      logger.debug "#{@path} closed"
     end
   end
 end

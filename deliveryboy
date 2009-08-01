@@ -18,26 +18,15 @@ class Deliveryboy
   def initialize(config)
     Loggable.logger = (config["logger"]["path"].to_s.strip == "") ? Logger.new(STDOUT) : Logger.new(config["logger"]["path"])
     logger.level = config["logger"]["level"]
-    @inbox  = Inbox.new(config["inbox"])
-    @outbox = Outbox.new(config["outbox"])
-    @hostname  = config["hostname"]
+    @maildirs = config["maildirs"].collect {|cfg| Maildir.new(cfg)}
   end
 
   def run
-    trap("INT") { logger.info "shutting down ..."; @inbox.terminated = @outbox.terminated = true; }
+    trap("INT") { logger.info "shutting down ..."; @maildirs.each {|dir| dir.terminated = true} }
     logger.info "Ctrl-C to terminate"
-    threads = [
-      Thread.new { @inbox.run },
-      Thread.new { @outbox.run },
-    ]
-    logger.debug "#{threads.length} threads #{threads.inspect} running ..."
-    threads.collect {|t| t.join; logger.debug "thread #{t.inspect} done" }
-    logger.debug "#{threads.length} threads done"
+    threads = @maildirs.collect {|dir| Thread.new { dir.run } }
+    threads.collect {|t| t.join }
   end
-
-  # to prettify logging output
-  class Outbox < Maildir; end
-  class Inbox < Maildir; end
 end
 
 Deliveryboy.new(YAML.load(IO.read("#{__FILE__}.yml"))).run
