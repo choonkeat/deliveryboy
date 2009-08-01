@@ -12,7 +12,7 @@ class ArchiveMail
 
   def handle(tmail_object)
     filename = Deliveryboy::Client.queue(tmail_object.to_s, @dirname)
-    logger.debug "saved at #{filename}"
+    logger.info "saved at #{filename}"
     if @limit
       files = Dir[File.join(@dirname, '**', '*.*.*')]
       if files.length > @limit
