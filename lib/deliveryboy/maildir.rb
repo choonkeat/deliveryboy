@@ -22,7 +22,7 @@ class Deliveryboy
 
     def handle(mail)
       @plugins.each do |plugin|
-        logger.debug "Trying #{plugin.inspect} ..."
+        logger.debug "calling #{plugin.inspect} ..."
         return if plugin.handle(mail) == false
         # callback chain is broken when one returns false
       end
@@ -35,7 +35,12 @@ class Deliveryboy
 
     def get_filename
       @filematch ||= File.join(@path, File.join("**", "[0-9]*"))
-      Dir[@filematch].first
+      mtime, filename = Dir[@filematch].inject([]) do |current, f|
+        mt = File.mtime(f)
+        (current.empty? || mt < current[0]) ? [mt, f] : current
+      end
+      # oldest file, by mtime
+      filename
     end
 
     def run
@@ -52,7 +57,6 @@ class Deliveryboy
           open(filename) {|io| self.handle(TMail::Mail.parse(io.read))}
         ensure
           File.delete filename
-          logger.debug "removed #{filename}"
         end
       end
     ensure

@@ -1,20 +1,21 @@
 logger:
   level: 0
-  path:
-inbox:
-  path: queue/inbox
-  plugins:
-    - path: plugins/archive_mail.rb
-      prefix: inbox
-      dirname: archives
-    - path: plugins/print_summary.rb
-outbox:
-  path: queue/outbox
-  plugins:
-    - path: plugins/archive_mail.rb
-      prefix: outbox
-    - path: plugins/send_smtp.rb
-      host: localhost
-      port: 25
-      sender_host: localhost
-    - path: plugins/print_summary.rb
+  path: 
+
+maildirs:
+  - path: queue/inbox
+    plugins:
+      - script: plugins/archive_mail.rb
+        dirname: archives
+      - script: plugins/print_summary.rb
+
+  - path: queue/outbox
+    plugins:
+      - script: plugins/archive_mail.rb
+        dirname: archives
+        limit: 2
+      - script: plugins/send_smtp.rb
+        host: localhost
+        port: 25
+        sender_host: example.com
+      - script: plugins/print_summary.rb
