@@ -5,12 +5,11 @@ class Deliveryboy
     attr_accessor :terminated
     def initialize(config)
       @path = config["path"]
-      @filematch = File.join(@path, File.join("**", "[0-9]*"))
       File.makedirs(@path)
       @mtime = File.stat(@path).mtime
       @terminated = false
-      @plugins = (config["plugins"] || []).collect {|path| plugin_class(path).new(self) }
-      logger.info "#{self.class.name} configured plugins: #{@plugins.collect {|p| p.class.name}.inspect}"
+      @plugins = (config["plugins"] || []).collect {|hash| plugin_class(hash['path']).new(hash) }
+      logger.info "#{@path} configured plugins: #{@plugins.collect {|p| p.class.name}.inspect}"
     end
 
     PLUGINS = {}
@@ -23,16 +22,23 @@ class Deliveryboy
 
     def handle(mail)
       @plugins.each do |plugin|
+        logger.debug "Trying #{plugin.inspect} ..."
         return if plugin.handle(mail) == false
         # callback chain is broken when one returns false
       end
+    rescue
+      # server must continue running so,
+      # run "archive_mail" as first plugin
+      logger.error $!
+      logger.error $!.backtrace
     end
 
     def get_filename
+      @filematch ||= File.join(@path, File.join("**", "[0-9]*"))
       Dir[@filematch].first
     end
 
-    def run(&block)
+    def run
       while not @terminated
         while (filename = self.get_filename).nil?
           while (newmtime = File.stat(@path).mtime) == @mtime
@@ -42,11 +48,11 @@ class Deliveryboy
           @mtime = newmtime
         end # filename.nil?
         begin
-          logger.info "#{filename}: #{self.class.name} handling ..."
-          open(filename, &block)
+          logger.info "#{filename}: handling ..."
+          open(filename) {|io| self.handle(TMail::Mail.parse(io.read))}
         ensure
           File.delete filename
-          logger.debug "#{filename}: #{self.class.name} removed ..."
+          logger.debug "#{filename}: removed ..."
         end
       end
     end

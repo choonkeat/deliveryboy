@@ -1,4 +1,5 @@
 require "socket"
+require "tempfile"
 class Deliveryboy
   module Client
     def self.queue(raw_mail_text, outbox_path, tmpbox_path = Dir::tmpdir)

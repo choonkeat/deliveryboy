@@ -2,11 +2,11 @@ class PrintSummary
   # compulsary stuff
   include Deliveryboy::Maildir::Plugin
 
-  def initialize(owner)
+  def initialize(config)
   end
 
   def handle(tmail_object)
-    logger.info "from:#{tmail_object.from} subject:#{tmail_object.subject} (#{tmail_object.to_s.length} bytes)"
+    logger.info "recipients:#{tmail_object.destinations.join(',')} subject:#{tmail_object.subject} (#{tmail_object.to_s.length} bytes)"
   end
 
   # optional stuff

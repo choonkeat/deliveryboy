@@ -1,17 +1,20 @@
-hostname: localhost
+logger:
+  level: 0
+  path:
 inbox:
   path: queue/inbox
   plugins:
-    - plugins/mail_archiver.rb
-    - plugins/print_summary.rb
+    - path: plugins/archive_mail.rb
+      prefix: inbox
+      dirname: archives
+    - path: plugins/print_summary.rb
 outbox:
   path: queue/outbox
   plugins:
-    - plugins/mail_archiver.rb
-    - plugins/print_summary.rb
-smtp:
-  hostname: localhost
-  port: 25
-logger:
-  level: 0
-  path: 
+    - path: plugins/archive_mail.rb
+      prefix: outbox
+    - path: plugins/send_smtp.rb
+      host: localhost
+      port: 25
+      sender_host: localhost
+    - path: plugins/print_summary.rb

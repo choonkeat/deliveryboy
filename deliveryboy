@@ -20,48 +20,16 @@ class Deliveryboy
     logger.level = config["logger"]["level"]
     @inbox  = Inbox.new(config["inbox"])
     @outbox = Outbox.new(config["outbox"])
-    @smtp_host = config["smtp"]["hostname"]
-    @smtp_port = config["smtp"]["port"]
     @hostname  = config["hostname"]
-  end
-
-  def deliver(mail)
-    mail.ready_to_send
-    Net::SMTP.start(@smtp_host, @smtp_port, @hostname) do |smtp|
-      smtp.send_message(
-        mail.encoded,
-        (mail['return-path'] && mail['return-path'].spec) || mail.from,
-        mail.destinations
-      )
-    end
-  rescue Exception, Errno::ECONNREFUSED
-    logger.error $!
-    logger.error $!.backtrace
-  # rescue Errno::ECONNREFUSED
-  #   raise if smtp_host
-  #   mail.destinations.each do |single_destination|
-  #     deliver(mail, single_destination, single_destination.split('@').last, 25)
-  #   end
   end
 
   def run
     trap("INT") { logger.info "shutting down ..."; @inbox.terminated = @outbox.terminated = true; }
     logger.info "Ctrl-C to terminate"
-    threads = []
-    # read all mails in inbox, and invoke callbacks
-    threads << Thread.new do
-      @inbox.run do |io|
-        @inbox.handle(TMail::Mail.parse(io.read))
-      end
-    end
-    # read all mails in outbox, and deliver them via smtp
-    threads << Thread.new do
-      @outbox.run do |io|
-        mail = TMail::Mail.parse(io.read)
-        @outbox.handle(mail)
-        self.deliver(mail)
-      end
-    end
+    threads = [
+      Thread.new { @inbox.run },
+      Thread.new { @outbox.run },
+    ]
     logger.debug "#{threads.length} threads #{threads.inspect} running ..."
     threads.collect {|t| t.join; logger.debug "thread #{t.inspect} done" }
     logger.debug "#{threads.length} threads done"
