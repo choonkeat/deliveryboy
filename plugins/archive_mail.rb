@@ -16,7 +16,7 @@ class ArchiveMail
     if @limit
       files = Dir[File.join(@dirname, '**', '*.*.*')]
       if files.length > @limit
-        files.sort_by {|f| File.mtime(f) }[@limit..-1].each do |ancient_file|
+        files.sort_by {|f| File.mtime(f) }[0...files.length-@limit].each do |ancient_file|
           File.delete(ancient_file)
         end
       end
