@@ -5,8 +5,8 @@ class Deliveryboy
     attr_accessor :terminated
     def initialize(config)
       @filematch = config["filematch"] || "*.*"
-      @dirmatch = config["dirmatch"] || "{new,.}"
-      @maildir = config["maildir"]
+      @dirmatch  = config["dirmatch"]  || "{new,cur,.}"
+      @maildir   = config["maildir"]
       # make a Maildir structure
       ["new", "cur", "tmp", "err"].each {|subdir| File.makedirs(File.join(@maildir, subdir))}
       @terminated = false
