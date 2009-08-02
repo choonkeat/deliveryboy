@@ -20,11 +20,6 @@ class SendSmtp
       )
     end
     logger.debug "sent via #{@host}:#{@port} in #{Time.now.to_f - start}s"
-  rescue Exception, IOError, Errno::ECONNREFUSED
-    logger.error $!
-    logger.error "Retrying after sleep ..."
-    sleep 10 + rand(20)
-    retry
   end
 
   # optional stuff

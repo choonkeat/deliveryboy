@@ -4,9 +4,11 @@ class Deliveryboy
 
     attr_accessor :terminated
     def initialize(config)
+      @filematch = config["filematch"] || "*.*"
+      @dirmatch = config["dirmatch"] || "{new,.}"
       @maildir = config["maildir"]
       # make a Maildir structure
-      ["new", "cur", "tmp"].each {|subdir| File.makedirs(File.join(@maildir, subdir))}
+      ["new", "cur", "tmp", "err"].each {|subdir| File.makedirs(File.join(@maildir, subdir))}
       @terminated = false
       @plugins = (config["plugins"] || []).collect {|hash| plugin_class(hash['script']).new(hash) }
       logger.info "#{@maildir} configured plugins: #{@plugins.collect {|p| p.class.name}.join(', ')}"
@@ -20,23 +22,29 @@ class Deliveryboy
       PLUGINS[script]
     end
 
-    def handle(mail)
+    def handle(filename)
+      logger.info "handling #{filename}"
+      mail = open(filename) {|io| TMail::Mail.parse(io.read) }
       @plugins.each do |plugin|
         logger.debug "calling #{plugin.inspect} ..."
         return if plugin.handle(mail) == false
         # callback chain is broken when one returns false
       end
-    rescue
+      File.delete filename
+    rescue Exception
       # server must continue running so,
       # run "archive_mail" as first plugin
       logger.error $!
-      logger.error $!.backtrace
+      err_filename = File.join(@maildir, "err", File.split(filename).last)
+      logger.error "Failed mail archived as #{err_filename} ..."
+      File.rename filename, err_filename
+      sleep 5
     end
 
     def get_filename
       # looks for file in maildir/new/, maildir/cur/ and maildir/ itself. (avoids maildir/tmp/)
-      @filematch ||= File.join(@maildir, "{new,cur,.}", "*.*")
-      mtime, filename = Dir[@filematch].inject([]) do |current, f|
+      @fullmatch ||= File.join(@maildir, @dirmatch, @filematch)
+      mtime, filename = Dir[@fullmatch].inject([]) do |current, f|
         mt = File.mtime(f)
         (current.empty? || mt < current[0]) ? [mt, f] : current
       end
@@ -50,12 +58,7 @@ class Deliveryboy
           sleep 5
           return if @terminated
         end # filename.nil?
-        begin
-          logger.info "handling #{filename}"
-          open(filename) {|io| self.handle(TMail::Mail.parse(io.read))}
-        ensure
-          File.delete filename
-        end
+        self.handle(filename)
       end
     ensure
       logger.debug "#{@maildir} closed"
