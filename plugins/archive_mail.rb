@@ -7,7 +7,8 @@ class ArchiveMail
   def initialize(config)
     @maildir = config["maildir"]
     @limit   = config["limit"]
-    File.makedirs(@maildir)
+    # make a Maildir structure
+    ["new", "cur", "tmp"].each {|subdir| File.makedirs(File.join(@maildir, subdir))}
   end
 
   def handle(tmail_object)

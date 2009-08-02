@@ -7,7 +7,6 @@ class Deliveryboy
       @maildir = config["maildir"]
       # make a Maildir structure
       ["new", "cur", "tmp"].each {|subdir| File.makedirs(File.join(@maildir, subdir))}
-      @mtime = File.stat(@maildir).mtime
       @terminated = false
       @plugins = (config["plugins"] || []).collect {|hash| plugin_class(hash['script']).new(hash) }
       logger.info "#{@maildir} configured plugins: #{@plugins.collect {|p| p.class.name}.join(', ')}"
@@ -48,11 +47,8 @@ class Deliveryboy
     def run
       while not @terminated
         while (filename = self.get_filename).nil?
-          while (newmtime = File.stat(@maildir).mtime) == @mtime
-            sleep 5
-            return if @terminated
-          end # mtime unchanged?
-          @mtime = newmtime
+          sleep 5
+          return if @terminated
         end # filename.nil?
         begin
           logger.info "handling #{filename}"
