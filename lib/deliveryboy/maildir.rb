@@ -4,12 +4,13 @@ class Deliveryboy
 
     attr_accessor :terminated
     def initialize(config)
-      @path = config["path"]
-      File.makedirs(@path)
-      @mtime = File.stat(@path).mtime
+      @maildir = config["maildir"]
+      # make a Maildir structure
+      ["new", "cur", "tmp"].each {|subdir| File.makedirs(File.join(@maildir, subdir))}
+      @mtime = File.stat(@maildir).mtime
       @terminated = false
       @plugins = (config["plugins"] || []).collect {|hash| plugin_class(hash['script']).new(hash) }
-      logger.info "#{@path} configured plugins: #{@plugins.collect {|p| p.class.name}.join(', ')}"
+      logger.info "#{@maildir} configured plugins: #{@plugins.collect {|p| p.class.name}.join(', ')}"
     end
 
     PLUGINS = {}
@@ -34,7 +35,8 @@ class Deliveryboy
     end
 
     def get_filename
-      @filematch ||= File.join(@path, File.join("**", "[0-9]*"))
+      # looks for file in maildir/new/, maildir/cur/ and maildir/ itself. (avoids maildir/tmp/)
+      @filematch ||= File.join(@maildir, "{new,cur,.}", "*.*")
       mtime, filename = Dir[@filematch].inject([]) do |current, f|
         mt = File.mtime(f)
         (current.empty? || mt < current[0]) ? [mt, f] : current
@@ -46,7 +48,7 @@ class Deliveryboy
     def run
       while not @terminated
         while (filename = self.get_filename).nil?
-          while (newmtime = File.stat(@path).mtime) == @mtime
+          while (newmtime = File.stat(@maildir).mtime) == @mtime
             sleep 5
             return if @terminated
           end # mtime unchanged?
@@ -60,7 +62,7 @@ class Deliveryboy
         end
       end
     ensure
-      logger.debug "#{@path} closed"
+      logger.debug "#{@maildir} closed"
     end
   end
 end

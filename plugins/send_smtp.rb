@@ -6,6 +6,7 @@ class SendSmtp
     @host = config["host"]
     @port = config["port"]
     @sender_host = config["sender_host"] || `hostname`.strip
+    @return_user = config["return_user"] || "deliveryboy"
   end
 
   def handle(mail)
@@ -14,7 +15,7 @@ class SendSmtp
     Net::SMTP.start(@host, @port, @sender_host) do |smtp|
       smtp.send_message(
         mail.encoded,
-        (mail['return-path'] && mail['return-path'].spec) || mail.from,
+        "#{@return_user}@#{@sender_host}", # (mail['return-path'] && mail['return-path'].spec) || mail.from,
         mail.destinations
       )
     end
