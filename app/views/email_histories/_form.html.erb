@@ -1,0 +1,45 @@
+<%= form_for(@email_history) do |f| %>
+  <% if @email_history.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@email_history.errors.count, "error") %> prohibited this email_history from being saved:</h2>
+
+      <ul>
+      <% @email_history.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :to_email_id %><br />
+    <%= f.text_field :to_email_id %>
+  </div>
+  <div class="field">
+    <%= f.label :from_email_id %><br />
+    <%= f.text_field :from_email_id %>
+  </div>
+  <div class="field">
+    <%= f.label :message_id %><br />
+    <%= f.text_field :message_id %>
+  </div>
+  <div class="field">
+    <%= f.label :open_at %><br />
+    <%= f.datetime_select :open_at %>
+  </div>
+  <div class="field">
+    <%= f.label :visit_at %><br />
+    <%= f.datetime_select :visit_at %>
+  </div>
+  <div class="field">
+    <%= f.label :bounce_at %><br />
+    <%= f.datetime_select :bounce_at %>
+  </div>
+  <div class="field">
+    <%= f.label :bounce_reason %><br />
+    <%= f.text_field :bounce_reason %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

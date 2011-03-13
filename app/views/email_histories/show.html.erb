@@ -1,0 +1,40 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>To email:</b>
+  <%= @email_history.to_email_id %>
+</p>
+
+<p>
+  <b>From email:</b>
+  <%= @email_history.from_email_id %>
+</p>
+
+<p>
+  <b>Message:</b>
+  <%= @email_history.message_id %>
+</p>
+
+<p>
+  <b>Open at:</b>
+  <%= @email_history.open_at %>
+</p>
+
+<p>
+  <b>Visit at:</b>
+  <%= @email_history.visit_at %>
+</p>
+
+<p>
+  <b>Bounce at:</b>
+  <%= @email_history.bounce_at %>
+</p>
+
+<p>
+  <b>Bounce reason:</b>
+  <%= @email_history.bounce_reason %>
+</p>
+
+
+<%= link_to 'Edit', edit_email_history_path(@email_history) %> |
+<%= link_to 'Back', email_histories_path %>

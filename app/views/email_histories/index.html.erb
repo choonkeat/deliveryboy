@@ -1,0 +1,35 @@
+<h1>Listing email_histories</h1>
+
+<table>
+  <tr>
+    <th>To email</th>
+    <th>From email</th>
+    <th>Message</th>
+    <th>Open at</th>
+    <th>Visit at</th>
+    <th>Bounce at</th>
+    <th>Bounce reason</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @email_histories.each do |email_history| %>
+  <tr>
+    <td><%= email_history.to_email_id %></td>
+    <td><%= email_history.from_email_id %></td>
+    <td><%= email_history.message_id %></td>
+    <td><%= email_history.open_at %></td>
+    <td><%= email_history.visit_at %></td>
+    <td><%= email_history.bounce_at %></td>
+    <td><%= email_history.bounce_reason %></td>
+    <td><%= link_to 'Show', email_history %></td>
+    <td><%= link_to 'Edit', edit_email_history_path(email_history) %></td>
+    <td><%= link_to 'Destroy', email_history, :confirm => 'Are you sure?', :method => :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Email history', new_email_history_path %>
