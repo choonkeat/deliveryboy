@@ -1,6 +1,6 @@
 require 'deliveryboy/client'
 
-class ArchiveMail
+class Deliveryboy::Plugins::ArchiveMail
   # compulsary stuff
   include Deliveryboy::Maildir::Plugin
 

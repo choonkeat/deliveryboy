@@ -1,4 +1,4 @@
-class PrintSummary
+class Deliveryboy::Plugins::PrintSummary
   # compulsary stuff
   include Deliveryboy::Maildir::Plugin
 

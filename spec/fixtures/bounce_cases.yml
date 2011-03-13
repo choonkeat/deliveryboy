@@ -1,0 +1,38 @@
+fullinbox:
+  message_id: '20090913051606.0A0AF708CD@testhost.com'
+  original_to:  fullinbox@testreceiver.com
+  status: '5.0.0'
+
+unknown_recipient:
+  message_id: '4ac8f53d9cca3_73aa..fdbd9000c135da@testhost.com'
+  original_to:  'unknown_recipient@testreceiver.com'
+  status: '5.0.0'
+
+unknown_recipient2:
+  message_id: '4afedd38b17e1_1d98..fdbdcc69c375c4@testhost.com'
+  original_to:  'unknown_recipient2@testreceiver.com'
+  status: '5.1.1'
+
+without_delivery_status:
+  message_id: '4afae3f621a14_3ce1..fdbd14ea24914f@testhost.com'
+  original_to: 'without_delivery_status@testreceiver.com'
+
+connection_timed_out:
+  message_id: '4b4db4e3387da_6fa..fdbc956f2283d4@testhost.com'
+  original_to: 'connection_timed_out@testreceiver.com'
+  status: '4.4.1'
+
+host_not_found:
+  message_id: '4b1e25285a6b6_380c..fdbd3e9a04357c@testhost.com'
+  original_to: 'host_hot_found@testreceiver.com'
+  status: '5.4.4'
+
+relay_failed:
+  message_id: '4af806e115ecd_7edb..fdbdbfe9c151c8@testhost.com'
+  original_to: 'relay_failed@testreceiver.com'
+  status: '5.7.1'
+
+forwarding_loop:
+  message_id: '4a74ef2a18b45_eae..fdbd40c822272@testhost.com'
+  original_to: 'forwarding_loop@mail.testreceiver.com'
+  status: '4.4.6'

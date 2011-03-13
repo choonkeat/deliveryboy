@@ -16,9 +16,9 @@ class Deliveryboy
   include Loggable
 
   def initialize(config)
-    Loggable.logger = (config["logger"]["path"].to_s.strip == "") ? Logger.new(STDOUT) : Logger.new(config["logger"]["path"])
-    logger.level = config["logger"]["level"]
-    @maildirs = config["maildirs"].collect {|cfg| Maildir.new(cfg)}
+    Loggable.logger = (config[:logger][:path].to_s.strip == "") ? Logger.new(STDOUT) : Logger.new(config[:logger][:path])
+    logger.level = config[:logger][:level]
+    @maildirs = config[:maildirs].collect {|cfg| Maildir.new(cfg)}
   end
 
   def run
@@ -29,4 +29,4 @@ class Deliveryboy
   end
 end
 
-Deliveryboy.new(YAML.load(IO.read("#{__FILE__}.yml"))).run
+Deliveryboy.new(HashWithIndifferentAccess.new YAML.load(IO.read("#{__FILE__}.yml"))).run

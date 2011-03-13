@@ -4,13 +4,13 @@ class Deliveryboy
 
     attr_accessor :terminated
     def initialize(config)
-      @filematch = config["filematch"] || "*.*"
-      @dirmatch  = config["dirmatch"]  || "{new,cur,.}"
-      @maildir   = config["maildir"]
+      @filematch = config[:filematch] || "*.*"
+      @dirmatch  = config[:dirmatch]  || "{new,cur,.}"
+      @maildir   = config[:maildir]
       # make a Maildir structure
       ["new", "cur", "tmp", "err"].each {|subdir| File.makedirs(File.join(@maildir, subdir))}
       @terminated = false
-      @plugins = (config["plugins"] || []).collect {|hash| plugin_class(hash['script']).new(hash) }
+      @plugins = (config[:plugins] || []).collect {|hash| plugin_class(hash['script']).new(hash) }
       logger.info "#{@maildir} configured plugins: #{@plugins.collect {|p| p.class.name}.join(', ')}"
     end
 

@@ -1,0 +1,65 @@
+Return-Path: <>
+X-Original-To: donotreply@testsender.com
+Delivered-To: donotreply@testsender.com
+Received: from mail-yw0-f236.testreceiver.com (mail-yw0-f236.testreceiver.com [200.90.180.170])
+	by testhost.com (Postfix) with ESMTP id 3589F70949
+	for <donotreply@testsender.com>; Wed, 11 Nov 2009 16:19:04 +0000 (UTC)
+Received: by ywh25 with SMTP id 25so160945ywh.1
+        for <donotreply@testsender.com>; Wed, 11 Nov 2009 08:19:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=testreceiver.com; s=beta;
+        h=domainkey-signature:received:mime-version:received:from:to
+         :x-failed-recipients:subject:message-id:date:content-type;
+        bh=o7XlWSqU6tDJjqTPYesBZSR0uftsvZ29+76hBC966Dc=;
+        b=WYu/x9MsS6SHcqM1UBrJQMTNhlTfpCIdtfgsFegHei29zl8d5HRfjA1rbUp8oXqfAX
+         fIJMuRaE2/K3ZUpbPfYQ==
+DomainKey-Signature: a=rsa-sha1; c=nofws;
+        d=testreceiver.com; s=beta;
+        h=mime-version:from:to:x-failed-recipients:subject:message-id:date
+         :content-type;
+        b=HD7hhMUNwnVOM2apf6lC2nK+JCbsYJ0KK9VIwlGtnCWVH2E46MMoG1Y/rZQWLrMcMK
+         Q+UVFBrrD96milore9aQ==
+Received: by 110.10.190.33 with SMTP id d27mr1705662ano.12.1257956371635;
+        Wed, 11 Nov 2009 08:19:31 -0800 (PST)
+MIME-Version: 1.0
+Received: by 110.10.190.33 with SMTP id d27mr2257965ano.12; Wed, 11 Nov 2009 
+	08:19:31 -0800 (PST)
+From: Mail Delivery Subsystem <mailer-daemon@testreceiver.com>
+To: donotreply@testsender.com
+X-Failed-Recipients: without_delivery_status@testreceiver.com
+Subject: Delivery Status Notification (Failure)
+Message-ID: <001636c92903ac99fe04781aca2c@testreceiver.com>
+Date: Wed, 11 Nov 2009 16:19:31 +0000
+Content-Type: text/plain; charset=ISO-8859-1
+
+Delivery to the following recipient failed permanently:
+
+     without_delivery_status@testreceiver.com
+
+Technical details of permanent failure: 
+You have exceeded the the allowable number of posts without solving a captcha.
+
+----- Original message -----
+
+Received: by 110.10.190.33 with SMTP id d27mr1705656ano.12.1257956371466;
+        Wed, 11 Nov 2009 08:19:31 -0800 (PST)
+Return-Path: <donotreply@testsender.com>
+Received: from testhost.com (testhost.com [70.60.50.40])
+        by gmr-mx.testreceiver.com with ESMTP id 18si137772gxk.3.2009.11.11.08.19.31;
+        Wed, 11 Nov 2009 08:19:31 -0800 (PST)
+Received-SPF: pass (testreceiver.com: domain of donotreply@testsender.com designates 70.60.50.40 as permitted sender) client-ip=70.60.50.40;
+Authentication-Results: gmr-mx.testreceiver.com; spf=pass (testreceiver.com: domain of donotreply@testsender.com designates 70.60.50.40 as permitted sender) smtp.mail=donotreply@testsender.com
+Received: from testsender.com (localhost [127.0.0.1])
+	by testhost.com (Postfix) with ESMTP id 256B170949
+	for <without_delivery_status@testreceiver.com>; Wed, 11 Nov 2009 16:19:02 +0000 (UTC)
+Date: Wed, 11 Nov 2009 16:19:02 +0000
+From: "The Full Feed from HuffingtonPost.com" <donotreply@testsender.com>
+To: without_delivery_status@testreceiver.com
+Message-Id: <4afae3f621a14_3ce1..fdbd14ea24914f@testhost.com>
+Subject: Poll
+Mime-Version: 1.0
+Content-Type: multipart/alternative;
+	boundary=mimepart_4afae3f624c94_3ce1..fdbd14ea2492cc
+
+Hello
+

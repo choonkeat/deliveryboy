@@ -1,4 +1,4 @@
-class SendSmtp
+class Deliveryboy::Plugins::SendSmtp
   # compulsary stuff
   include Deliveryboy::Maildir::Plugin
 

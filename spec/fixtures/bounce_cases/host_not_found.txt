@@ -1,0 +1,91 @@
+Return-Path: <>
+X-Original-To: donotreply@testsender.com
+Delivered-To: donotreply@testsender.com
+Received: by testhost.com (Postfix)
+	id 7F34270991; Tue,  8 Dec 2009 10:06:32 +0000 (UTC)
+Date: Tue,  8 Dec 2009 10:06:32 +0000 (UTC)
+From: MAILER-DAEMON@testhost.com (Mail Delivery System)
+Subject: Undelivered Mail Returned to Sender
+To: donotreply@testsender.com
+Auto-Submitted: auto-replied
+MIME-Version: 1.0
+Content-Type: multipart/report; report-type=delivery-status;
+	boundary="5B7CA7075B.1260266792/testhost.com"
+Message-Id: <20091208100632.7F34270991@testhost.com>
+
+This is a MIME-encapsulated message.
+
+--5B7CA7075B.1260266792/testhost.com
+Content-Description: Notification
+Content-Type: text/plain; charset=us-ascii
+
+This is the mail system at host testhost.com.
+
+I'm sorry to have to inform you that your message could not
+be delivered to one or more recipients. It's attached below.
+
+For further assistance, please send mail to postmaster.
+
+If you do so, please include this problem report. You can
+delete your own text from the attached returned message.
+
+                   The mail system
+
+<host_hot_found@testreceiver.com>: Host or domain name not found. Name service error
+    for name=testreceiver.com type=A: Host not found
+
+--5B7CA7075B.1260266792/testhost.com
+Content-Description: Delivery report
+Content-Type: message/delivery-status
+
+Reporting-MTA: dns; testhost.com
+X-Postfix-Queue-ID: 5B7CA7075B
+X-Postfix-Sender: rfc822; donotreply@testsender.com
+Arrival-Date: Tue,  8 Dec 2009 10:06:32 +0000 (UTC)
+
+Final-Recipient: rfc822; host_hot_found@testreceiver.com
+Original-Recipient: rfc822;host_hot_found@testreceiver.com
+Action: failed
+Status: 5.4.4
+Diagnostic-Code: X-Postfix; Host or domain name not found. Name service error
+    for name=testreceiver.com type=A: Host not found
+
+--5B7CA7075B.1260266792/testhost.com
+Content-Description: Undelivered Message
+Content-Type: message/rfc822
+
+Received: from testsender.com (localhost [127.0.0.1])
+	by testhost.com (Postfix) with ESMTP id 5B7CA7075B
+	for <host_hot_found@testreceiver.com>; Tue,  8 Dec 2009 10:06:32 +0000 (UTC)
+Date: Tue, 8 Dec 2009 10:06:32 +0000
+From: Evil Beet Gossip <donotreply@testsender.com>
+To: host_hot_found@testreceiver.com
+Message-Id: <4b1e25285a6b6_380c..fdbd3e9a04357c@testhost.com>
+Subject: =?utf-8?Q?Didn=e2=80=99t_Come_Home?=
+Mime-Version: 1.0
+Content-Type: multipart/alternative; boundary=mimepart_4b1e25285ad5f_380c..fdbd3e9a04365e
+
+
+
+--mimepart_4b1e25285ad5f_380c..fdbd3e9a04365e
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: Quoted-printable
+Content-Disposition: inline
+
+This weekend
+
+--mimepart_4b1e25285ad5f_380c..fdbd3e9a04365e
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: Quoted-printable
+Content-Disposition: inline
+
+<HTML>
+
+<body>
+<p>This weekend</p>
+</body></HTML>
+
+
+--mimepart_4b1e25285ad5f_380c..fdbd3e9a04365e--
+
+--5B7CA7075B.1260266792/testhost.com--
