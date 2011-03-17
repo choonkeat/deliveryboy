@@ -16,13 +16,16 @@ describe Deliveryboy::Maildir do
   before(:each) do
     Deliveryboy::Loggable.logger = AuditLog.new
     @maildirpath = "#{Rails.root}/tmp/maildir-#{$$}"
-    @maildir = Deliveryboy::Maildir.new({
+    @maildir_config = {
       :maildir => @maildirpath,
+      :throttle => 1,
       :plugins => [
+        { :script => 'deliveryboy/plugins/print_summary' },
         { :script => "#{File.dirname(__FILE__)}/../fixtures/plugin1" },
         { :script => "#{File.dirname(__FILE__)}/../fixtures/plugin2" },
       ]
-    })
+    }
+    @maildir = Deliveryboy::Maildir.new(@maildir_config)
   end
 
   after(:each) do
@@ -69,12 +72,11 @@ describe Deliveryboy::Maildir do
   end
 
   it "files encountering errors will be placed in 'err' subdir" do
-    @maildir = Deliveryboy::Maildir.new({
-      :maildir => @maildirpath,
+    @maildir = Deliveryboy::Maildir.new(@maildir_config.merge({
       :plugins => [
         { :script => "#{File.dirname(__FILE__)}/../fixtures/pluginerror" },
       ]
-    })
+    }))
     mail_file = File.join(@maildirpath, "new", "sample.eml")
     open(mail_file, "w") {|f| f.write(IO.read("#{File.dirname(__FILE__)}/../fixtures/bounce_cases/fullinbox.eml")) }
     @maildir.handle(@maildir.get_filename)
@@ -82,15 +84,27 @@ describe Deliveryboy::Maildir do
     File.exists?(File.join(@maildirpath, "err", "sample.eml")).should be_true
   end
 
+  it "files encountering errors will cause delay (to throttle processing)" do
+    @maildir = Deliveryboy::Maildir.new(@maildir_config.merge({
+      :plugins => [
+        { :script => "#{File.dirname(__FILE__)}/../fixtures/pluginerror" },
+      ]
+    }))
+    mail_file = File.join(@maildirpath, "new", "sample.eml")
+    open(mail_file, "w") {|f| f.write(IO.read("#{File.dirname(__FILE__)}/../fixtures/bounce_cases/fullinbox.eml")) }
+    now = Time.now
+    @maildir.handle(@maildir.get_filename)
+    Time.now.should >= now + @maildir.instance_variable_get('@throttle')
+  end
+
   it "files encountering errors will abort call-chain" do
-    @maildir = Deliveryboy::Maildir.new({
-      :maildir => @maildirpath,
+    @maildir = Deliveryboy::Maildir.new(@maildir_config.merge({
       :plugins => [
         { :script => "#{File.dirname(__FILE__)}/../fixtures/plugin1" },
         { :script => "#{File.dirname(__FILE__)}/../fixtures/pluginerror" },
         { :script => "#{File.dirname(__FILE__)}/../fixtures/plugin2" },
       ]
-    })
+    }))
     mail_file = File.join(@maildirpath, "new", "sample.eml")
     open(mail_file, "w") {|f| f.write(IO.read("#{File.dirname(__FILE__)}/../fixtures/bounce_cases/fullinbox.eml")) }
     @maildir.handle(@maildir.get_filename)
@@ -101,5 +115,24 @@ describe Deliveryboy::Maildir do
     log_of_plugin2.should be_nil
   end
 
+  it "plugins returning false will also abort call-chain, but does not put files in 'err' subdir" do
+    @maildir = Deliveryboy::Maildir.new(@maildir_config.merge({
+      :plugins => [
+        { :script => "#{File.dirname(__FILE__)}/../fixtures/plugin1" },
+        { :script => "#{File.dirname(__FILE__)}/../fixtures/pluginfalse" },
+        { :script => "#{File.dirname(__FILE__)}/../fixtures/plugin2" },
+      ]
+    }))
+    mail_file = File.join(@maildirpath, "new", "sample.eml")
+    open(mail_file, "w") {|f| f.write(IO.read("#{File.dirname(__FILE__)}/../fixtures/bounce_cases/fullinbox.eml")) }
+    @maildir.handle(@maildir.get_filename)
+    log_of_plugin1 = Deliveryboy::Loggable.logger.logs.find {|(method,(*args))| args.last == Plugin1 }
+    log_of_plugin2 = Deliveryboy::Loggable.logger.logs.find {|(method,(*args))| args.last == Plugin2 }
+    log_of_plugin1.should_not be_nil
+    Deliveryboy::Loggable.logger.logs.should include log_of_plugin1
+    log_of_plugin2.should be_nil
+    File.exists?(mail_file).should be_false
+    File.exists?(File.join(@maildirpath, "err", "sample.eml")).should be_false
+  end
 
 end

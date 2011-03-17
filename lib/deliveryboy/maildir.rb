@@ -7,6 +7,7 @@ module Deliveryboy
 
     attr_accessor :terminated
     def initialize(config)
+      @throttle  = (config[:throttle] || 5).to_i
       @filematch = config[:filematch] || "*.*"
       @dirmatch  = config[:dirmatch]  || "{new,cur,.}"
       @maildir   = config[:maildir]
@@ -30,7 +31,7 @@ module Deliveryboy
       mail = open(filename) {|io| Mail.new(io.read) }
       @plugins.each do |plugin|
         logger.debug "calling #{plugin.inspect} ..."
-        return if plugin.handle(mail) == false
+        break if plugin.handle(mail) == false
         # callback chain is broken when one returns false
       end
       File.delete filename
@@ -41,7 +42,7 @@ module Deliveryboy
       err_filename = File.join(@maildir, "err", File.split(filename).last)
       logger.error "Failed mail archived as #{err_filename} ..."
       File.rename filename, err_filename
-      sleep 5
+      sleep @throttle
     end
 
     def get_filename
@@ -58,7 +59,7 @@ module Deliveryboy
     def run
       while not @terminated
         while (filename = self.get_filename).nil?
-          sleep 5
+          sleep @throttle
           return if @terminated
         end # filename.nil?
         self.handle(filename)

@@ -1,5 +1,5 @@
-require 'deliveryboy/client'
 require 'deliveryboy/plugins'
+require 'deliveryboy/client'
 
 class Deliveryboy::Plugins::ArchiveMail
   # compulsary stuff
