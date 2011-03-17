@@ -3,7 +3,7 @@ Dir[File.join(File.dirname(__FILE__), "vendor", "gems", "*")].each do |dir|
   File.exists?(libdir = File.join(dir, "lib")) ? $LOAD_PATH.unshift(libdir) : $LOAD_PATH.unshift(dir)
 end
 require 'rubygems'
-require 'tmail'
+require 'mail'
 require 'mail_util'
 require 'deliveryboy/client'
 

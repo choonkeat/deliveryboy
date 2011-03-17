@@ -1,12 +1,13 @@
 require 'deliveryboy/client'
+require 'deliveryboy/plugins'
 
-module Deliveryboy::Plugins::ArchiveMail
+class Deliveryboy::Plugins::ArchiveMail
   # compulsary stuff
   include Deliveryboy::Maildir::Plugin
 
   def initialize(config)
-    @maildir = config["maildir"]
-    @limit   = config["limit"]
+    @maildir = config[:maildir]
+    @limit   = config[:limit]
     # make a Maildir structure
     ["new", "cur", "tmp"].each {|subdir| FileUtils.mkdir_p(File.join(@maildir, subdir))}
   end

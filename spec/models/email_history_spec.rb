@@ -7,7 +7,7 @@ describe EmailHistory do
     @yml = YAML.load(IO.read("#{Rails.root}/spec/fixtures/bounce_cases.yml"))
     @yml.each do |key, hash|
       it "should obtain the correct status for #{key}" do
-        data = IO.read("#{Rails.root}/spec/fixtures/bounce_cases/#{key}.txt")
+        data = IO.read("#{Rails.root}/spec/fixtures/bounce_cases/#{key}.eml")
         mail = Mail.new(data)
         mail.should be_bounced
         mail.error_status.should == hash['status']

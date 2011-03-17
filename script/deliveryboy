@@ -5,7 +5,7 @@ include Process::Highlander::PID # so there can only be one
 
 require 'deliveryboy/main'
 require 'rubygems'
-require 'tmail'
+require 'mail'
 require 'net/smtp'
 require 'yaml'
 

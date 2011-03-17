@@ -3,6 +3,9 @@ module Deliveryboy
     def self.logger=(val)
       @@logger=val
     end
+    def self.logger
+      @@logger
+    end
     def logger
       @@logger
     end

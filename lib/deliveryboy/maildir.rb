@@ -13,7 +13,7 @@ module Deliveryboy
       # make a Maildir structure
       ["new", "cur", "tmp", "err"].each {|subdir| FileUtils.mkdir_p(File.join(@maildir, subdir))}
       @terminated = false
-      @plugins = (config[:plugins] || []).collect {|hash| plugin_class(hash['script']).new(hash) }
+      @plugins = (config[:plugins] || []).collect {|hash| plugin_class(hash[:script]).new(hash) }
       logger.info "#{@maildir} configured plugins: #{@plugins.collect {|p| p.class.name}.join(', ')}"
     end
 
@@ -27,7 +27,7 @@ module Deliveryboy
 
     def handle(filename)
       logger.info "handling #{filename}"
-      mail = open(filename) {|io| TMail::Mail.parse(io.read) }
+      mail = open(filename) {|io| Mail.new(io.read) }
       @plugins.each do |plugin|
         logger.debug "calling #{plugin.inspect} ..."
         return if plugin.handle(mail) == false
