@@ -1,5 +1,4 @@
 class Plugin2
-  # compulsary stuff
   include Deliveryboy::Maildir::Plugin
 
   def initialize(config)
@@ -9,6 +8,5 @@ class Plugin2
     logger.info self.class
   end
 
-  # optional stuff
   include Deliveryboy::Loggable
 end

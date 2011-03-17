@@ -1,5 +1,4 @@
 class Pluginerror
-  # compulsary stuff
   include Deliveryboy::Maildir::Plugin
 
   def initialize(config)
@@ -9,6 +8,5 @@ class Pluginerror
     raise self.class
   end
 
-  # optional stuff
   include Deliveryboy::Loggable
 end
