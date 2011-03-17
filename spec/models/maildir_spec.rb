@@ -44,7 +44,7 @@ describe Deliveryboy::Maildir do
     File.exists?(mail_file).should be_false
   end
 
-  it "handles files in 'new' subdir, chronologically" do
+  it "picks files from 'new' subdir chronologically" do
     files = [File.join(@maildirpath, "new", "zzzzz.eml"), File.join(@maildirpath, "new", "aaaaa.eml")]
     files.each do |file|
       open(file, "w") {|f| f.write(IO.read("#{File.dirname(__FILE__)}/../fixtures/bounce_cases/fullinbox.eml")) }
@@ -59,7 +59,7 @@ describe Deliveryboy::Maildir do
     end
   end
 
-  it "creates invokes all plugins sequentially" do
+  it "invokes configured plugins sequentially" do
     mail_file = File.join(@maildirpath, "new", "sample.eml")
     open(mail_file, "w") {|f| f.write(IO.read("#{File.dirname(__FILE__)}/../fixtures/bounce_cases/fullinbox.eml")) }
     @maildir.handle(@maildir.get_filename)
@@ -68,7 +68,7 @@ describe Deliveryboy::Maildir do
     Deliveryboy::Loggable.logger.logs.index(log_of_plugin1).should < Deliveryboy::Loggable.logger.logs.index(log_of_plugin2)
   end
 
-  it "creates handle error puts file in 'err' subdir" do
+  it "files encountering errors will be placed in 'err' subdir" do
     @maildir = Deliveryboy::Maildir.new({
       :maildir => @maildirpath,
       :plugins => [
@@ -82,7 +82,7 @@ describe Deliveryboy::Maildir do
     File.exists?(File.join(@maildirpath, "err", "sample.eml")).should be_true
   end
 
-  it "creates breaks call chain on plugin error" do
+  it "files encountering errors will abort call-chain" do
     @maildir = Deliveryboy::Maildir.new({
       :maildir => @maildirpath,
       :plugins => [
