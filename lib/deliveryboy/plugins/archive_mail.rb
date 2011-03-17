@@ -1,6 +1,6 @@
 require 'deliveryboy/client'
 
-class Deliveryboy::Plugins::ArchiveMail
+module Deliveryboy::Plugins::ArchiveMail
   # compulsary stuff
   include Deliveryboy::Maildir::Plugin
 
@@ -8,7 +8,7 @@ class Deliveryboy::Plugins::ArchiveMail
     @maildir = config["maildir"]
     @limit   = config["limit"]
     # make a Maildir structure
-    ["new", "cur", "tmp"].each {|subdir| File.makedirs(File.join(@maildir, subdir))}
+    ["new", "cur", "tmp"].each {|subdir| FileUtils.mkdir_p(File.join(@maildir, subdir))}
   end
 
   def handle(tmail_object)

@@ -1,6 +1,6 @@
 require "socket"
 require "tempfile"
-class Deliveryboy
+module Deliveryboy
   module Client
     # 1. construct "unique.file.name" based on time, process id and hostname
     # 2. write "raw_text" into "outbox_maildir/tmp/unique.file.name" file

@@ -1,4 +1,7 @@
-class Deliveryboy
+require 'deliveryboy/loggable'
+require 'fileutils'
+
+module Deliveryboy
   class Maildir
     include Loggable
 
@@ -8,7 +11,7 @@ class Deliveryboy
       @dirmatch  = config[:dirmatch]  || "{new,cur,.}"
       @maildir   = config[:maildir]
       # make a Maildir structure
-      ["new", "cur", "tmp", "err"].each {|subdir| File.makedirs(File.join(@maildir, subdir))}
+      ["new", "cur", "tmp", "err"].each {|subdir| FileUtils.mkdir_p(File.join(@maildir, subdir))}
       @terminated = false
       @plugins = (config[:plugins] || []).collect {|hash| plugin_class(hash['script']).new(hash) }
       logger.info "#{@maildir} configured plugins: #{@plugins.collect {|p| p.class.name}.join(', ')}"

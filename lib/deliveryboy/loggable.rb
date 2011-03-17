@@ -1,4 +1,4 @@
-class Deliveryboy
+module Deliveryboy
   module Loggable
     def self.logger=(val)
       @@logger=val

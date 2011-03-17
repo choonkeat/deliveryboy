@@ -1,4 +1,4 @@
-class Deliveryboy
+module Deliveryboy
   class DNS
     def mx(hostname)
       list = Resolv::DNS.open {|dns| dns.getresources hostname, Resolv::DNS::Resource::IN::MX }
