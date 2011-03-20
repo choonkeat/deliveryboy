@@ -40,7 +40,7 @@ class Deliveryboy::Plugins::RecordMail
       EmailHistory.transaction do
         histories.each do |history|
           history.update_attributes(history_update)
-          history.from.update_attributes(from_update)
+          # history.from.update_attributes(from_update)
           history.to.update_attributes(to_update)
         end
       end

@@ -44,12 +44,12 @@ describe Deliveryboy::Plugins::RecordMail do
       history.bounce_reason.should_not be_nil
     end
 
-    it "should penalise sender" do
+    it "should not penalise sender" do
       @plugin.handle(@normal_mail)
       history = EmailHistory.find_by_message_id(@normal_mail.message_id)
       @plugin.handle(@bounced_mail)
       history.reload
-      history.from.allow_from_since.should > Time.now
+      history.from.allow_from_since.should < Time.now
     end
 
     it "should penalise recipient" do
