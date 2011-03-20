@@ -3,9 +3,9 @@ class EmailAddress < ActiveRecord::Base
   has_many :sent_messages, :class_name => 'EmailHistory', :foreign_key => 'from_email_id'
   before_create :set_unique
   def set_unique
-    self.unique = Digest::SHA1.hexdigest(self.base_email_address)
+    self.unique = Digest::SHA1.hexdigest(self.email)
   end
-  def base_email_address
-    self.email.gsub(/\+[^@]+@/, '@')
+  def self.base_email(email)
+    email.to_s.gsub(/\+[^@]+@/, '@').downcase
   end
 end

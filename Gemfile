@@ -34,4 +34,5 @@ group :development, :test do
   gem 'rspec'
   gem 'rspec-rails'
   gem 'capybara'
+  gem 'factory_girl_rails', '~> 1.1.beta1'
 end
