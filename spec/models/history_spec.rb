@@ -1,14 +1,15 @@
 require 'spec_helper'
 require 'deliveryboy/maildir'
-require 'deliveryboy/plugins/record_mail'
+require 'deliveryboy/plugins/history'
 
-describe Deliveryboy::Plugins::RecordMail do
+describe Deliveryboy::Plugins::History do
   before(:each) do
+    Deliveryboy::Loggable.logger = Logger.new(STDOUT)
     randoffset = rand(100)
     @hard_bounce = randoffset + 5
     @soft_bounce = randoffset + 1
-    @plugin = Deliveryboy::Plugins::RecordMail.new({ :hard_bounce => @hard_bounce, :soft_bounce => @soft_bounce })
-    @normal_mail = Mail.new(:from => 'Frommer <from@testfrom.com>', :to => 'Toer <to@testto.com>', :cc => 'Ccer <cc@testcc.com>', :cc => 'Bccer <bcc@testbcc.com>')
+    @plugin = Deliveryboy::Plugins::History.new({ :hard_bounce => @hard_bounce, :soft_bounce => @soft_bounce })
+    @normal_mail = Mail.new(:from => 'Frommer <from@testfrom.com>', :to => 'Toer <to@testto.com>', :cc => 'Ccer <cc@testcc.com>', :bcc => 'Bccer <bcc@testbcc.com>', :subject => "Hello world")
     @soft_bounced_mail = mock(Mail::Message, :bounced? => true, :bounced_hard? => false, :from => ['mailerdaemon@testto.com'], :to => @normal_mail.from, :cc => nil, :bcc => nil, :bounced_message => @normal_mail, :message_id => Mail.new.message_id, :subject => 'Delivery Status Notification (Delay)', :diagnostic_code => "oops")
     @hard_bounced_mail = mock(Mail::Message, :bounced? => true, :bounced_hard? => true, :from => ['mailerdaemon@testto.com'], :to => @normal_mail.from, :cc => nil, :bcc => nil, :bounced_message => @normal_mail, :message_id => Mail.new.message_id, :subject => 'Delivery Status Notification (Delay)', :diagnostic_code => "oops")
   end

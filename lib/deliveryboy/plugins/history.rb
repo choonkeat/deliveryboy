@@ -1,6 +1,6 @@
 require 'deliveryboy/plugins'
 
-class Deliveryboy::Plugins::RecordMail
+class Deliveryboy::Plugins::History
   # compulsary stuff
   include Deliveryboy::Maildir::Plugin
 
@@ -37,19 +37,24 @@ class Deliveryboy::Plugins::RecordMail
         :allow_to_since => penalty.since(time_now),
         :"#{bounce_type}_bounce_at" => time_now,
       }
+      logger.debug "[history] #{bounce_type} bounced (#{histories.collect(&:id).join(',')}) #{bounce.subject}"
       EmailHistory.transaction do
         histories.each do |history|
           history.update_attributes(history_update)
-          currently_more_severe = history.to.allow_to_since.to_i >= to_update[:allow_to_since].to_i
-          history.to.update_attributes(to_update) unless currently_more_severe
+          unless currently_more_severe = history.to.allow_to_since.to_i >= to_update[:allow_to_since].to_i
+            logger.debug "[history] #{bounce_type} bounced penalty #{history.to.email}"
+            history.to.update_attributes(to_update)
+          end
         end
       end
     else
+      histories = []
       from_email_addresses(mail).each do |from_email|
         to_email_addresses(mail).each do |to_email|
-          EmailHistory.create!({:from => from_email, :to => to_email, :message_id => mail.message_id, :subject => mail.subject})
+          histories << EmailHistory.create!({:from => from_email, :to => to_email, :message_id => mail.message_id, :subject => mail.subject})
         end
       end
+      logger.debug "[history] recorded (#{histories.collect(&:id).join(',')}) #{mail.subject}"
     end
   end
 
