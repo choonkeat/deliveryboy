@@ -1,10 +1,10 @@
 class Pluginfalse
-  include Deliveryboy::Maildir::Plugin
+  include Deliveryboy::Plugins # Deliveryboy::Maildir needs this to load plugins properly
 
   def initialize(config)
   end
 
-  def handle(tmail_object)
+  def handle(mail, emailaddr)
     false
   end
 

@@ -1,4 +1,5 @@
 require 'deliveryboy/loggable'
+require 'deliveryboy/plugins'
 require 'fileutils'
 
 module Deliveryboy
@@ -14,34 +15,34 @@ module Deliveryboy
       # make a Maildir structure
       ["new", "cur", "tmp", "err"].each {|subdir| FileUtils.mkdir_p(File.join(@maildir, subdir))}
       @terminated = false
-      @plugins = (config[:plugins] || []).collect {|hash| plugin_class(hash[:script]).new(hash) }
+      @plugins = (config[:plugins] || []).collect {|hash| Deliveryboy::Plugins.load(hash[:script]).new(hash) }
       logger.info "#{@maildir} configured plugins: #{@plugins.collect {|p| p.class.name}.join(', ')}"
-    end
-
-    PLUGINS = {}
-    module Plugin; def self.included(klass); PLUGINS[PLUGINS[:last_script]] = klass; end; end
-    def plugin_class(script)
-      PLUGINS[:last_script] = script
-      require script
-      PLUGINS[script]
     end
 
     def handle(filename)
       logger.info "handling #{filename}"
-      mail = open(filename) {|io| Mail.new(io.read) }
-      @plugins.each do |plugin|
-        logger.debug "calling #{plugin.inspect} ..."
-        break if plugin.handle(mail) == false
-        # callback chain is broken when one returns false
+      mailtxt = IO.read(filename)
+      mailobj = Mail.new(mailtxt)
+      mailobj.destinations.each_with_index do |recipient, index|
+        logger.debug "recipient: #{recipient.inspect} ..."
+        @plugins.each do |plugin|
+          logger.debug " - #{plugin.inspect} ..."
+          mail = (index == 0 ? mailobj : Mail.new(mailtxt))
+          mail.message_id = "#{mail.message_id}-#{index}"
+          break if plugin.handle(mail, recipient) == false
+          # callback chain is broken when one plugin returns false
+        end
       end
-      File.delete filename
+      File.delete filename if File.exists?(filename)
     rescue Exception
       # server must continue running so,
       # run "archive_mail" as first plugin
       logger.error $!
-      err_filename = File.join(@maildir, "err", File.split(filename).last)
-      logger.error "Failed mail archived as #{err_filename} ..."
-      File.rename filename, err_filename
+      if File.exists?(filename)
+        err_filename = File.join(@maildir, "err", File.split(filename).last)
+        logger.error "Failed mail archived as #{err_filename} ..."
+        File.rename filename, err_filename
+      end
       sleep @throttle
     end
 

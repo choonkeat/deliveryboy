@@ -4,6 +4,7 @@ class CreateEmailHistories < ActiveRecord::Migration
       t.integer :to_email_id
       t.integer :from_email_id
       t.string :message_id
+      t.string :unique
       t.string :subject
       t.datetime :open_at
       t.datetime :visit_at
@@ -12,6 +13,9 @@ class CreateEmailHistories < ActiveRecord::Migration
 
       t.timestamps
     end
+    add_index :email_histories, :to_email_id
+    add_index :email_histories, :from_email_id
+    add_index :email_histories, :message_id
   end
 
   def self.down

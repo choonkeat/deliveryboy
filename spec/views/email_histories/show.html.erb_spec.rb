@@ -6,6 +6,7 @@ describe "email_histories/show.html.erb" do
       :to_email_id => 1,
       :from_email_id => 1,
       :message_id => "Message",
+      :unique => EmailHistory.new.set_unique,
       :bounce_reason => "Bounce Reason"
     ))
   end

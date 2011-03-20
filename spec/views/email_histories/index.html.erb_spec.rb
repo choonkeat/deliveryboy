@@ -7,12 +7,14 @@ describe "email_histories/index.html.erb" do
         :to_email_id => 1,
         :from_email_id => 2,
         :message_id => "Message",
+        :unique => EmailHistory.new.set_unique,
         :bounce_reason => "Bounce Reason"
       ),
       stub_model(EmailHistory,
         :to_email_id => 1,
         :from_email_id => 2,
         :message_id => "Message",
+        :unique => EmailHistory.new.set_unique,
         :bounce_reason => "Bounce Reason"
       )
     ])
