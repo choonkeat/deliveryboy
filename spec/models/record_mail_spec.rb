@@ -8,29 +8,29 @@ describe Deliveryboy::Plugins::RecordMail do
     @hard_bounce = randoffset + 5
     @soft_bounce = randoffset + 1
     @plugin = Deliveryboy::Plugins::RecordMail.new({ :hard_bounce => @hard_bounce, :soft_bounce => @soft_bounce })
-    @normal_mail = Mail.new(:from => 'Frommer <from@testfrom.com>', :to => 'Toer <to@testto.com>')
+    @normal_mail = Mail.new(:from => 'Frommer <from@testfrom.com>', :to => 'Toer <to@testto.com>', :cc => 'Ccer <cc@testcc.com>', :cc => 'Bccer <bcc@testbcc.com>')
     @soft_bounced_mail = mock(Mail::Message, :bounced? => true, :bounced_hard? => false, :from => ['mailerdaemon@testto.com'], :to => @normal_mail.from, :cc => nil, :bcc => nil, :bounced_message => @normal_mail, :message_id => Mail.new.message_id, :subject => 'Delivery Status Notification (Delay)', :diagnostic_code => "oops")
     @hard_bounced_mail = mock(Mail::Message, :bounced? => true, :bounced_hard? => true, :from => ['mailerdaemon@testto.com'], :to => @normal_mail.from, :cc => nil, :bcc => nil, :bounced_message => @normal_mail, :message_id => Mail.new.message_id, :subject => 'Delivery Status Notification (Delay)', :diagnostic_code => "oops")
   end
 
   context "Outgoing mail" do
-    it "should create EmailAddress entry for 'From' if it does not exist" do
+    it "should create EmailAddress entry for all related email addresses, if it does not exist" do
       EmailAddress.delete_all
       @plugin.handle(@normal_mail)
-      @normal_mail.from.each do |email|
-        EmailAddress.where(:email => email).count.should == 1
-      end
+      @normal_mail.from.each {|email| EmailAddress.where(:email => email).count.should == 1}
+      @normal_mail.destinations.each {|email| EmailAddress.where(:email => email).count.should == 1}
+      # count should not increase
       @plugin.handle(@normal_mail)
-      @normal_mail.from.each do |email|
-        EmailAddress.where(:email => email).count.should == 1
-      end
+      @normal_mail.from.each {|email| EmailAddress.where(:email => email).count.should == 1}
+      @normal_mail.destinations.each {|email| EmailAddress.where(:email => email).count.should == 1}
     end
-    it "should create an EmailHistory record" do
+    it "should create an EmailHistory record for each from/destination pair" do
       histories = EmailHistory.where(:message_id => @normal_mail.message_id)
       histories.should be_empty
       @plugin.handle(@normal_mail)
       histories = EmailHistory.where(:message_id => @normal_mail.message_id)
       histories.should_not be_empty
+      histories.length.should == @normal_mail.destinations.length
     end
   end
 
