@@ -6,7 +6,7 @@ describe Deliveryboy::Plugins::RecordMail do
   before(:each) do
     @plugin = Deliveryboy::Plugins::RecordMail.new({})
     @normal_mail = Mail.new(:from => 'Frommer <from@testfrom.com>', :to => 'Toer <to@testto.com>')
-    @bounced_mail = mock(Mail::Message, :bounced? => true, :from => ['mailerdaemon@testto.com'], :to => @normal_mail.from, :cc => nil, :bcc => nil, :bounced_message => @normal_mail, :message_id => Mail.new.message_id, :subject => 'Delivery Status Notification (Delay)', :diagnostic_code => "oops")
+    @bounced_mail = mock(Mail::Message, :bounced? => true, :bounced_hard? => true, :from => ['mailerdaemon@testto.com'], :to => @normal_mail.from, :cc => nil, :bcc => nil, :bounced_message => @normal_mail, :message_id => Mail.new.message_id, :subject => 'Delivery Status Notification (Delay)', :diagnostic_code => "oops")
   end
 
   context "Outgoing mail" do
@@ -42,6 +42,22 @@ describe Deliveryboy::Plugins::RecordMail do
       history.reload
       history.bounce_at.should_not be_nil
       history.bounce_reason.should_not be_nil
+    end
+
+    it "should penalise sender" do
+      @plugin.handle(@normal_mail)
+      history = EmailHistory.find_by_message_id(@normal_mail.message_id)
+      @plugin.handle(@bounced_mail)
+      history.reload
+      history.from.allow_from_since.should > Time.now
+    end
+
+    it "should penalise recipient" do
+      @plugin.handle(@normal_mail)
+      history = EmailHistory.find_by_message_id(@normal_mail.message_id)
+      @plugin.handle(@bounced_mail)
+      history.reload
+      history.to.allow_to_since.should > Time.now
     end
   end
 end

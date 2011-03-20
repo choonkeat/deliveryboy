@@ -10,7 +10,7 @@ module Deliveryboy
       !!(error_status =~ /^5/)
     end
     def bounced_soft?
-      bounced? && (! hard_bounce?)
+      !!bounced? && (! bounced_hard?)
     end
   end
 end
