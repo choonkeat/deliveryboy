@@ -5,6 +5,10 @@ class Deliveryboy::Plugins::RecordMail
   include Deliveryboy::Maildir::Plugin
 
   def initialize(config)
+    @config = config.reverse_merge({
+      :hard_bounce => 1.month,
+      :soft_bounce => 1.day,
+    })
   end
 
   def from_email_addresses(mail)
@@ -23,8 +27,8 @@ class Deliveryboy::Plugins::RecordMail
     if mail.bounced? && bounce = mail.bounced_message
       histories = EmailHistory.where(:message_id => bounce.message_id, :to_email_id => to_email_addresses(bounce)).includes(:from, :to)
       time_now = Time.now
-      penalty = (mail.bounced_hard? ? 1.month : 1.day)
       bounce_type = (mail.bounced_hard? ? 'hard' : 'soft')
+      penalty = @config[:"#{bounce_type}_bounce"]
       history_update = {
         :bounce_at => time_now,
         :bounce_reason => mail.diagnostic_code,
@@ -41,7 +45,7 @@ class Deliveryboy::Plugins::RecordMail
         histories.each do |history|
           history.update_attributes(history_update)
           # history.from.update_attributes(from_update)
-          history.to.update_attributes(to_update)
+          history.to.update_attributes(to_update) unless history.to.allow_to_since.to_i >= to_update[:allow_to_since].to_i
         end
       end
     else
