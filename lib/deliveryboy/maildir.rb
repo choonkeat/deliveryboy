@@ -47,23 +47,18 @@ module Deliveryboy
     end
 
     def get_filename
-      # looks for file in maildir/new/, maildir/cur/ and maildir/ itself. (avoids maildir/tmp/)
-      @fullmatch ||= File.join(@maildir, @dirmatch, @filematch)
-      mtime, filename = Dir[@fullmatch].inject([]) do |current, f|
-        mt = File.mtime(f)
-        (current.empty? || mt < current[0]) ? [mt, f] : current
+      @sorted_filenames && @sorted_filenames.shift || begin
+        # batch operation for filename retrieval & mtime comparison
+        @fullmatch ||= File.join(@maildir, @dirmatch, @filematch)     # looks inside maildir/new/, maildir/cur/ and maildir/ itself. (avoids maildir/tmp/)
+        @sorted_filenames = Dir[@fullmatch].sort_by {|f| test(?M, f)} # sort by mtime
+        @sorted_filenames.shift
       end
-      # oldest file, by mtime
-      filename
     end
 
     def run
       while not @terminated
-        while (filename = self.get_filename).nil?
-          sleep @throttle
-          return if @terminated
-        end # filename.nil?
-        self.handle(filename)
+        sleep @throttle until filename = self.get_filename || @terminated
+        self.handle(filename) unless @terminated
       end
     ensure
       logger.debug "#{@maildir} closed"
