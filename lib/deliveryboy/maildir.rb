@@ -15,7 +15,7 @@ module Deliveryboy
       # make a Maildir structure
       ["new", "cur", "tmp", "err"].each {|subdir| FileUtils.mkdir_p(File.join(@maildir, subdir))}
       @terminated = false
-      @plugins = (config[:plugins] || []).collect {|hash| Deliveryboy::Plugins.load(hash[:script]).new(hash) }
+      @plugins = config[:plugins].collect {|hash| Deliveryboy::Plugins.load(hash[:script]).new(hash) }
       logger.info "#{@maildir} configured plugins: #{@plugins.collect {|p| p.class.name}.join(', ')}"
     end
 

@@ -37,6 +37,11 @@ describe Deliveryboy::Maildir do
     ["new", "cur", "tmp", "err"].each {|subdir| File.exists?(File.join(@maildirpath, subdir)).should be_true }
   end
 
+  it "refuse to initialize if configured without plugins defined" do
+    @maildir_config.delete :plugins
+    lambda { Deliveryboy::Maildir.new(@maildir_config) }.should raise_error
+  end
+
   it "removes the file after handling" do
     mail_file = File.join(@maildirpath, "new", "sample.eml")
     open(mail_file, "w") {|f| f.write(IO.read("#{File.dirname(__FILE__)}/../fixtures/bounce_cases/fullinbox.eml")) }
