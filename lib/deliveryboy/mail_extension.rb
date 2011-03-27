@@ -2,8 +2,10 @@ module Deliveryboy
   module MailExtension
     def bounced_part
       @bounced_part ||= self.parts.find {|p| p.mime_type == "message/rfc822"} || probably_bounced? && begin
-        halves = self.body.to_s.split(/----- Original message -----\s*/)
-        halves.length > 1 ? Mail::Part.new(:body => halves.last) : nil
+        # blank link, followed immediately by "some-key: value"
+        if self.body.to_s =~ /\n[\r\n]+([\w\-]+\: .+)\Z/m
+          Mail::Part.new(:body => $1)
+        end
       end
     end
     def bounced_message
