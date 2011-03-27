@@ -1,12 +1,15 @@
 #!/usr/bin/env ruby
-$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), "lib"))
-require 'process/highlander/pid'
-include Process::Highlander::PID # so there can only be one
-
-require 'deliveryboy/main'
-require 'rubygems'
-require 'mail'
-require 'net/smtp'
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), "../lib"))
+require 'process/highlander' # there can only be one
 require 'yaml'
+require 'mail'
+require 'deliveryboy/daemon'
+require 'deliveryboy/mail_extension'
+require 'active_support/hash_with_indifferent_access'
 
-Deliveryboy::Daemon.new(HashWithIndifferentAccess.new YAML.load(IO.read("#{__FILE__}.yml"))).run
+configyml = ARGV.first
+if configyml && File.exists?(configyml)
+  Deliveryboy::Daemon.new(HashWithIndifferentAccess.new(YAML.load(IO.read(configyml)))).run
+else
+  $stderr.puts "Usage: #{__FILE__} config-file"
+end

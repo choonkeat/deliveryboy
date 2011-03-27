@@ -1,11 +1,14 @@
-require 'deliveryboy/plugins'
+require 'active_support/core_ext/numeric/time'
+require 'deliveryboy/rails/active_record'
 require 'deliveryboy/loggable'
+require 'deliveryboy/plugins'
 require 'email_address'
 require 'email_history'
 
 class Deliveryboy::Plugins::History
   include Deliveryboy::Plugins # Deliveryboy::Maildir needs this to load plugins properly
   include Deliveryboy::Loggable # to use "logger"
+  include Deliveryboy::Rails::ActiveRecord # establish connection
 
   def initialize(config)
     @config = config.reverse_merge({

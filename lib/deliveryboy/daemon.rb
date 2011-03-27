@@ -3,12 +3,13 @@ require 'deliveryboy/maildir'
 require 'logger'
 
 class Deliveryboy::Daemon
-  include Loggable
+  include Deliveryboy::Loggable
 
   def initialize(config)
-    Loggable.logger = (config[:logger][:path].to_s.strip == "") ? Logger.new(STDOUT) : Logger.new(config[:logger][:path])
-    logger.level = config[:logger][:level]
-    @maildirs = config[:maildirs].collect {|cfg| Maildir.new(cfg)}
+    config[:logger] ||= {}
+    Deliveryboy::Loggable.logger = (config[:logger][:path].to_s.strip == "") ? Logger.new(STDOUT) : Logger.new(config[:logger][:path])
+    logger.level = config[:logger][:level] || Logger::DEBUG
+    @maildirs = config[:maildirs].collect {|cfg| Deliveryboy::Maildir.new(cfg)}
   end
 
   def run
