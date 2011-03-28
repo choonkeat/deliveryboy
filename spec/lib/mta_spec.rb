@@ -20,6 +20,9 @@ class NullMta
   def deliver_method(mail)
     mail.kind_of?(Mail::Message).should == true
   end
+  def overslept(mail)
+    sleep 2
+  end
 end
 
 describe Deliveryboy::Plugins::Mta do
@@ -36,5 +39,10 @@ describe Deliveryboy::Plugins::Mta do
     @plugin.handle(@normal_mail, @selected_recipient).should_not be_false
     @normal_mail.destinations.length.should == 1
     @normal_mail.destinations.first.should == @selected_recipient
+  end
+
+  it "should throw Timeout::Error when things take too long" do
+    @plugin = Deliveryboy::Plugins::Mta.new({ :invoke => 'NullMta#overslept', :timeout => 1 })
+    lambda { @plugin.handle(@normal_mail, @selected_recipient) }.should raise_error
   end
 end
