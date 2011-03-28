@@ -15,7 +15,6 @@ end
 class NullMta
   def initialize(config)
     config.kind_of?(Hash).should == true
-    config[:invoke].should == nil
   end
   def deliver_method(mail)
     mail.kind_of?(Mail::Message).should == true
@@ -26,9 +25,10 @@ class NullMta
 end
 
 describe Deliveryboy::Plugins::Mta do
+
   before(:each) do
     Deliveryboy::Loggable.logger = AuditLog.new
-    @plugin = Deliveryboy::Plugins::Mta.new({ :invoke => 'NullMta#deliver_method' })
+    @plugin = Deliveryboy::Plugins::Mta.new({ :class => 'NullMta', :method => 'deliver_method' })
     @normal_mail = Mail.new(:from => 'Frommer <from@testfrom.com>', :to => 'Toer <to@testto.com>', :cc => 'Ccer <cc@testcc.com>', :bcc => 'Bccer <bcc@testbcc.com>', :subject => "Hello world", :message_id => FactoryGirl.attributes_for(:mail)[:message_id])
     @selected_recipient = @normal_mail.destinations[rand(@normal_mail.destinations.length)]
     @selected_recipient.should_not be_blank
@@ -42,7 +42,42 @@ describe Deliveryboy::Plugins::Mta do
   end
 
   it "should throw Timeout::Error when things take too long" do
-    @plugin = Deliveryboy::Plugins::Mta.new({ :invoke => 'NullMta#overslept', :timeout => 1 })
+    @plugin = Deliveryboy::Plugins::Mta.new({ :class => 'NullMta', :method => 'overslept', :timeout => 1 })
     lambda { @plugin.handle(@normal_mail, @selected_recipient) }.should raise_error
   end
+
+  context "configuration" do
+    it "should use default config if not specified" do
+      @plugin = Deliveryboy::Plugins::Mta.new({ })
+      found_config = @plugin.config_for("sender@example.com")
+      found_config[:class].should == Deliveryboy::Plugins::Mta::DEFAULT_CONFIG[:class]
+      found_config[:method].should == Deliveryboy::Plugins::Mta::DEFAULT_CONFIG[:method]
+      found_config[:returnpath].should == Deliveryboy::Plugins::Mta::DEFAULT_CONFIG[:returnpath]
+      found_config[:timeout].should == Deliveryboy::Plugins::Mta::DEFAULT_CONFIG[:timeout]
+    end
+
+    it "should override values only where configured specifically" do
+      [[:class, 'NullMta'], [:method, 'overslept'], [:returnpath, 'returnpath@example.com'], [:timeout, 1]].each do |(globalkey,globalvalue)|
+        [[:class, 'Mail::SMTP'], [:method, 'deliver!'], [:returnpath, 'specific@example.com'], [:timeout, 2]].each do |(specifickey,specificvalue)|
+          @plugin = Deliveryboy::Plugins::Mta.new({
+            globalkey => globalvalue, :from => {
+              "ender@example.com"  => {specifickey => "Hash"},
+              "sender@example.com" => {specifickey => specificvalue},
+          }})
+          found_config = @plugin.config_for("sender@example.com")
+          [:class, :method, :returnpath, :timeout].each do |k|
+            case k
+            when specifickey
+              found_config[k].should == specificvalue
+            when globalkey
+              found_config[k].should == globalvalue
+            else
+              found_config[k].should == Deliveryboy::Plugins::Mta::DEFAULT_CONFIG[k]
+            end
+          end
+        end
+      end
+    end
+  end
+
 end

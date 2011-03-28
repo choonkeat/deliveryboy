@@ -18,5 +18,17 @@ class Deliveryboy::Daemon
     threads = @maildirs.collect {|dir| Thread.new { dir.run } }
     threads.collect {|t| t.join }
   end
-end
 
+  def self.symbolize_keys(object)
+    case object
+    when Hash
+      object.inject({}) do |sum, (key, value)|
+        sum.merge(key.to_sym => self.symbolize_keys(value))
+      end
+    when Array
+      object.collect {|x| self.symbolize_keys(x) }
+    else
+      object
+    end
+  end
+end

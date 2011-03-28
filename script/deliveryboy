@@ -1,15 +1,21 @@
 #!/usr/bin/env ruby
-$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), "../lib"))
-require 'process/highlander' # there can only be one
-require 'yaml'
-require 'mail'
-require 'deliveryboy/daemon'
-require 'deliveryboy/mail_extension'
-require 'active_support/hash_with_indifferent_access'
+configfile = ARGV.first
+if configfile && File.exists?(configfile)
+  $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), "../lib"))
+  require 'process/highlander' # there can only be one
+  require 'mail'
+  require 'deliveryboy/daemon'
+  require 'deliveryboy/mail_extension'
 
-configyml = ARGV.first
-if configyml && File.exists?(configyml)
-  Deliveryboy::Daemon.new(HashWithIndifferentAccess.new(YAML.load(IO.read(configyml)))).run
+  config = case configfile
+  when /.yml$/i
+    require 'yaml'
+    YAML.load(IO.read(configfile))
+  else
+    require 'json'
+    JSON.parse(IO.read(configfile))
+  end
+  Deliveryboy::Daemon.new( Deliveryboy::Daemon.symbolize_keys(config) ).run
 else
-  $stderr.puts "Usage: #{__FILE__} config-file"
+  $stderr.puts "Usage: #{__FILE__} config.{json,yml}"
 end

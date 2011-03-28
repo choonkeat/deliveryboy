@@ -1,0 +1,22 @@
+maildirs: 
+- maildir: /home/deliveryboy/Maildir
+  plugins: 
+  - script: deliveryboy/plugins/history
+  - script: deliveryboy/plugins/archive
+  - script: deliveryboy/plugins/mta
+    class: Mail::SMTP
+    from: 
+      "@example.com": 
+        method: deliver!
+        config: 
+          address: smtp.gmail.com
+          port: 587
+          authentication: plain
+          domain: example.com
+          user_name: user@example.com
+          password: passw0rd
+      "@": 
+        method: deliver!
+        config: 
+          address: 127.0.0.1
+          port: 25
