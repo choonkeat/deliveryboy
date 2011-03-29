@@ -38,7 +38,7 @@ class Deliveryboy::Plugins::Mta
 
   def handle(mail, recipient)
     match, config = match_config_for(mail.sender || mail.from_addrs.first)
-    mail.extend(ModifiableDestinations)
+    mail.extend(ModifiableDestinations) unless mail.respond_to?(:destinations=)
     mail.destinations = [recipient]
     mail.return_path = config[:returnpath] || mail.sender || mail.from_addrs.first
     start = Time.now.to_f

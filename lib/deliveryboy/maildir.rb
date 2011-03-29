@@ -25,11 +25,10 @@ module Deliveryboy
       mailobj = Mail.new(mailtxt)
       mailobj.destinations.each_with_index do |recipient, index|
         logger.debug "recipient: #{recipient.inspect} ..."
+        mail = (index == 0 ? mailobj : Mail.new(mailtxt))
+        mail.to_s unless mail.has_message_id? # generate unique message_id if absent
+        mail.message_id = "#{mail.message_id}-#{index}"
         @plugins.each do |plugin|
-          logger.debug " - #{plugin.inspect} ..."
-          mail = (index == 0 ? mailobj : Mail.new(mailtxt))
-          mail.to_s unless mail.has_message_id? # generate unique message_id if absent
-          mail.message_id = "#{mail.message_id}-#{index}"
           break if plugin.handle(mail, recipient) == false
           # callback chain is broken when one plugin returns false
         end
