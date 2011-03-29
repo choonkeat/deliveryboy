@@ -49,7 +49,7 @@ describe Deliveryboy::Plugins::Mta do
   context "configuration" do
     it "should use default config if not specified" do
       @plugin = Deliveryboy::Plugins::Mta.new({ })
-      found_config = @plugin.config_for("sender@example.com")
+      match, found_config = @plugin.match_config_for("sender@example.com")
       found_config[:class].should == Deliveryboy::Plugins::Mta::DEFAULT_CONFIG[:class]
       found_config[:method].should == Deliveryboy::Plugins::Mta::DEFAULT_CONFIG[:method]
       found_config[:returnpath].should == Deliveryboy::Plugins::Mta::DEFAULT_CONFIG[:returnpath]
@@ -64,7 +64,7 @@ describe Deliveryboy::Plugins::Mta do
               "ender@example.com"  => {specifickey => "Hash"},
               "sender@example.com" => {specifickey => specificvalue},
           }})
-          found_config = @plugin.config_for("sender@example.com")
+          match, found_config = @plugin.match_config_for("sender@example.com")
           [:class, :method, :returnpath, :timeout].each do |k|
             case k
             when specifickey

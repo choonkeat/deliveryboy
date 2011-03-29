@@ -1,5 +1,5 @@
-require 'deliveryboy/plugins'
 require 'deliveryboy/loggable'
+require 'deliveryboy/plugins'
 require 'timeout'
 
 class Deliveryboy::Plugins::Mta

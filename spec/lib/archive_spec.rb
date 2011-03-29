@@ -2,8 +2,19 @@ require 'spec_helper'
 require 'deliveryboy/maildir'
 require 'deliveryboy/plugins/archive'
 
+class AuditLog
+  attr_accessor :logs
+  def initialize
+    @logs = []
+  end
+  def method_missing(method, *args)
+    @logs << [method, args]
+  end
+end
+
 describe Deliveryboy::Plugins::Archive do
   before(:each) do
+    Deliveryboy::Loggable.logger = AuditLog.new
     @plugin = Deliveryboy::Plugins::Archive.new({})
     @normal_mail = Mail.new(:from => 'Frommer <from@testfrom.com>', :to => 'Toer <to@testto.com>', :cc => 'Ccer <cc@testcc.com>', :bcc => 'Bccer <bcc@testbcc.com>', :subject => "Hello world", :message_id => FactoryGirl.attributes_for(:mail)[:message_id])
     @selected_recipient = @normal_mail.destinations[rand(@normal_mail.destinations.length)]
