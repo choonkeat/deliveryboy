@@ -3,13 +3,16 @@ module Deliveryboy
     def bounced_part
       @bounced_part ||= self.parts.find {|p| p.mime_type == "message/rfc822"} || probably_bounced? && begin
         # blank link, followed immediately by "some-key: value"
-        if self.body.to_s =~ /\n[\r\n]+([\w\-]+\: .+)\Z/m
+        body_s = self.charset ? self.body.to_s.encode(self.charset) : self.body.to_s
+        if body_s =~ /\n[\r\n]+([\w\-]+\: .+)\Z/m
           Mail::Part.new(:body => $1)
         end
       end
     end
     def bounced_message
-      Mail.new(self.bounced_part.body) if bounced_part
+      if bounced_part
+        Mail.new(self.bounced_part.body)
+      end
     end
     def bounced_hard?
       !!(error_status =~ /^5/)
