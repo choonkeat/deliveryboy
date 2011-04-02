@@ -49,7 +49,7 @@ class Deliveryboy::Plugins::History
     else
       histories = []
       EmailHistory.transaction do
-        find_or_create_email_addresses(mail.from).each do |from_email|
+        find_or_create_email_addresses(mail.froms).each do |from_email|
           find_or_create_email_addresses([recipient]).each do |to_email|
             if to_email.allow_to_since && to_email.allow_to_since.to_i > time_now.to_i
               logger.debug "[history] excluding #{to_email.email} until #{to_email.allow_to_since}"
@@ -60,7 +60,7 @@ class Deliveryboy::Plugins::History
           end
         end
       end
-      logger.debug "[history] recorded (#{histories.collect(&:id).join(',')}) From:#{mail.from.join(',')} To:#{mail.destinations.join(',')} Subject:#{mail.subject}"
+      logger.debug "[history] recorded (#{histories.collect(&:id).join(',')}) From:#{mail.froms.join(',')} To:#{mail.destinations.join(',')} Subject:#{mail.subject}"
     end
   end
 end

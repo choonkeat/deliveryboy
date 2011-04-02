@@ -37,6 +37,11 @@ module Deliveryboy
         end
       end
     end
+    def froms
+      return self.from if self.from.kind_of?(Array)
+      field = Mail::FromField.new(self.from.to_s.scan(/\S+@\S+/).last)
+      Mail::AddressContainer.new(field, [field.to_s])
+    end
   end
 end
 

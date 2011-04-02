@@ -20,8 +20,8 @@ describe Deliveryboy::Plugins::History do
     @soft_bounce = randoffset + 1
     @plugin = Deliveryboy::Plugins::History.new({ :hard_bounce => @hard_bounce, :soft_bounce => @soft_bounce })
     @normal_mail = Mail.new(:from => 'Frommer <from@testfrom.com>', :to => 'Toer <to@testto.com>', :cc => 'Ccer <cc@testcc.com>', :bcc => 'Bccer <bcc@testbcc.com>', :subject => "Hello world", :message_id => FactoryGirl.attributes_for(:mail)[:message_id])
-    @soft_bounced_mail = mock(Mail::Message, :probably_bounced? => true, :bounced_hard? => false, :from => ['mailerdaemon@testto.com'], :to => @normal_mail.from, :cc => nil, :bcc => nil, :destinations => ['mailerdaemon@testto.com'], :bounced_message => @normal_mail, :message_id => FactoryGirl.attributes_for(:mail)[:message_id], :subject => 'Delivery Status Notification (Delay)', :diagnostic_code => "oops")
-    @hard_bounced_mail = mock(Mail::Message, :probably_bounced? => true, :bounced_hard? => true, :from => ['mailerdaemon@testto.com'], :to => @normal_mail.from, :cc => nil, :bcc => nil, :destinations => ['mailerdaemon@testto.com'], :bounced_message => @normal_mail, :message_id => FactoryGirl.attributes_for(:mail)[:message_id], :subject => 'Delivery Status Notification (Delay)', :diagnostic_code => "oops")
+    @soft_bounced_mail = mock(Mail::Message, :probably_bounced? => true, :bounced_hard? => false, :from => ['mailerdaemon@testto.com'], :to => @normal_mail.froms, :cc => nil, :bcc => nil, :destinations => ['mailerdaemon@testto.com'], :bounced_message => @normal_mail, :message_id => FactoryGirl.attributes_for(:mail)[:message_id], :subject => 'Delivery Status Notification (Delay)', :diagnostic_code => "oops")
+    @hard_bounced_mail = mock(Mail::Message, :probably_bounced? => true, :bounced_hard? => true, :from => ['mailerdaemon@testto.com'], :to => @normal_mail.froms, :cc => nil, :bcc => nil, :destinations => ['mailerdaemon@testto.com'], :bounced_message => @normal_mail, :message_id => FactoryGirl.attributes_for(:mail)[:message_id], :subject => 'Delivery Status Notification (Delay)', :diagnostic_code => "oops")
   end
 
   context "Outgoing mail" do
@@ -32,11 +32,11 @@ describe Deliveryboy::Plugins::History do
     it "should create EmailAddress entry for 'from' and 'recipient', if it does not exist" do
       EmailAddress.delete_all
       @plugin.handle(@normal_mail, @selected_recipient).should_not be_false
-      @normal_mail.from.each {|email| EmailAddress.where(:email => email).count.should == 1}
+      @normal_mail.froms.each {|email| EmailAddress.where(:email => email).count.should == 1}
       [@selected_recipient].each {|email| EmailAddress.where(:email => email).count.should == 1}
       # count should not increase
       @plugin.handle(@normal_mail, @selected_recipient).should_not be_false
-      @normal_mail.from.each {|email| EmailAddress.where(:email => email).count.should == 1}
+      @normal_mail.froms.each {|email| EmailAddress.where(:email => email).count.should == 1}
       [@selected_recipient].each {|email| EmailAddress.where(:email => email).count.should == 1}
     end
     it "should create an EmailHistory record for 'from' and 'recipient' pair" do
@@ -50,7 +50,7 @@ describe Deliveryboy::Plugins::History do
     it "should return false when encountering penalized recipients" do
       @plugin.handle(@normal_mail, @selected_recipient)
       @plugin.handle(@hard_bounced_mail, @hard_bounced_mail.destinations.first)
-      newmail = Mail.new(:from => @normal_mail.from, :to => @normal_mail.destinations + ['innocent1@test.com', 'innocent2@test.com'], :subject => "Hello world")
+      newmail = Mail.new(:from => @normal_mail.froms, :to => @normal_mail.destinations + ['innocent1@test.com', 'innocent2@test.com'], :subject => "Hello world")
       @plugin.handle(newmail, @selected_recipient).should be_false
     end
   end
