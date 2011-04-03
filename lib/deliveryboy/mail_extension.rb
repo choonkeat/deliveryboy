@@ -45,4 +45,23 @@ module Deliveryboy
   end
 end
 
+# String encoding from utf-8 to utf-8 doesn't trigger encoder options like {invalid: :replace}
+# Hack: do a utf-8 > utf-16le > utf-8 hop
+Mail::Ruby19.class_eval do
+  class << self
+    alias :b_value_decode_optimistic :b_value_decode
+    def b_value_decode(str)
+      value = b_value_decode_optimistic(str)
+      return value if value.valid_encoding?
+      value.encode("utf-16le", :invalid => :replace, :replace => "").encode("utf-8", :invalid => :replace, :replace => "")
+    end
+    alias :q_value_decode_optimistic :q_value_decode
+    def q_value_decode(str)
+      value = q_value_decode_optimistic(str)
+      return value if value.valid_encoding?
+      value.encode("utf-16le", :invalid => :replace, :replace => "").encode("utf-8", :invalid => :replace, :replace => "")
+    end
+  end
+end
+
 Mail::Message.send :include, Deliveryboy::MailExtension
