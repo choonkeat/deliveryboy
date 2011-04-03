@@ -14,4 +14,11 @@ describe Deliveryboy::MailExtension do
       end
     end
   end
+  describe "subject with bad encoding" do
+    it "should skip invalid characters" do
+      m = Mail.new
+      m['Subject'] = Mail::SubjectField.new("=?utf-8?Q?Hello_=96_World?=")
+      m.subject.should be_valid_encoding
+    end
+  end
 end
