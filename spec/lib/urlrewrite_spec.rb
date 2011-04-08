@@ -36,16 +36,16 @@ describe Deliveryboy::Plugins::UrlRewrite do
   it "should leave text mail untouched" do
     @normal_mail.add_part(@text_part)
     txt = @normal_mail.to_s
-    @history.handle(@normal_mail, @selected_recipient).should_not be_false
-    @plugin.handle(@normal_mail, @selected_recipient).should_not be_false
+    @history.handle(@normal_mail, @selected_recipient).should_not == false
+    @plugin.handle(@normal_mail, @selected_recipient).should_not == false
     @normal_mail.to_s.should == txt
   end
 
   it "should rewrite all <A> tags in HTML" do
     @normal_mail.add_part(@link_part)
     before_links = collect_html_elements(@normal_mail, 'a') {|a| a['href'] }
-    @history.handle(@normal_mail, @selected_recipient).should_not be_false
-    @plugin.handle(@normal_mail, @selected_recipient).should_not be_false
+    @history.handle(@normal_mail, @selected_recipient).should_not == false
+    @plugin.handle(@normal_mail, @selected_recipient).should_not == false
     after_links = collect_html_elements(@normal_mail, 'a') {|a| a['href'] }
     before_links.should_not == after_links
     after_links.each_with_index do |link, index|
@@ -63,8 +63,8 @@ describe Deliveryboy::Plugins::UrlRewrite do
     @plugin = Deliveryboy::Plugins::UrlRewrite.new({ :url_prefix => 'https://new.com', :unsubscribe_url_prefix => 'http://list.com' })
     @normal_mail.add_part(@link_part)
     before_links = collect_html_elements(@normal_mail, 'a') {|a| a['href'] }
-    @history.handle(@normal_mail, @selected_recipient).should_not be_false
-    @plugin.handle(@normal_mail, @selected_recipient).should_not be_false
+    @history.handle(@normal_mail, @selected_recipient).should_not == false
+    @plugin.handle(@normal_mail, @selected_recipient).should_not == false
     after_links = collect_html_elements(@normal_mail, 'a') {|a| a['href'] }
     before_links.should_not == after_links
     after_links.each_with_index do |link, index|
@@ -85,8 +85,8 @@ describe Deliveryboy::Plugins::UrlRewrite do
   it "should rewrite only the first <img> tag in HTML" do
     @normal_mail.add_part(@imgs_part)
     before_links = collect_html_elements(@normal_mail, 'img') {|img| img['src'] }
-    @history.handle(@normal_mail, @selected_recipient).should_not be_false
-    @plugin.handle(@normal_mail, @selected_recipient).should_not be_false
+    @history.handle(@normal_mail, @selected_recipient).should_not == false
+    @plugin.handle(@normal_mail, @selected_recipient).should_not == false
     after_links = collect_html_elements(@normal_mail, 'img') {|img| img['src'] }
     before_links.first.should_not == after_links.first
     before_links[1..-1].should == after_links[1..-1]
@@ -105,8 +105,8 @@ describe Deliveryboy::Plugins::UrlRewrite do
     @normal_mail.add_part(@link_part)
     before_links = collect_html_elements(@normal_mail, 'img') {|img| img['src'] }
     before_links.should be_empty
-    @history.handle(@normal_mail, @selected_recipient).should_not be_false
-    @plugin.handle(@normal_mail, @selected_recipient).should_not be_false
+    @history.handle(@normal_mail, @selected_recipient).should_not == false
+    @plugin.handle(@normal_mail, @selected_recipient).should_not == false
     after_links = collect_html_elements(@normal_mail, 'img') {|img| img['src'] }
     after_links.should_not be_empty
     after_links[0..0].each_with_index do |link, index|

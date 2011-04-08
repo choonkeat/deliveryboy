@@ -36,7 +36,7 @@ describe Deliveryboy::Plugins::Mta do
 
   it "should should only send email to selected recipient" do
     @normal_mail.destinations.length.should > 1
-    @plugin.handle(@normal_mail, @selected_recipient).should_not be_false
+    @plugin.handle(@normal_mail, @selected_recipient).should_not == false
     @normal_mail.destinations.length.should == 1
     @normal_mail.destinations.first.should == @selected_recipient
   end

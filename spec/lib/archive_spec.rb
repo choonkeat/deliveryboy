@@ -23,14 +23,14 @@ describe Deliveryboy::Plugins::Archive do
   it "should create an EmailArchive record for each mail" do
     archives = EmailArchive.where(:message_id => @normal_mail.message_id)
     archives.should be_empty
-    @plugin.handle(@normal_mail, @selected_recipient).should_not be_false
+    @plugin.handle(@normal_mail, @selected_recipient).should_not == false
     archives = EmailArchive.where(:message_id => @normal_mail.message_id)
     archives.should_not be_empty
     archives.length.should == 1
   end
 
   it "should store a compressed version of the email text" do
-    @plugin.handle(@normal_mail, @selected_recipient).should_not be_false
+    @plugin.handle(@normal_mail, @selected_recipient).should_not == false
     archive = EmailArchive.where(:message_id => @normal_mail.message_id).first
     archive.body_gzip.length.should < @normal_mail.to_s.length
     archive.body.should == @normal_mail.to_s
