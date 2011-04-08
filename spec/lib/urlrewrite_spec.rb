@@ -41,6 +41,10 @@ describe Deliveryboy::Plugins::UrlRewrite do
     @normal_mail.to_s.should == txt
   end
 
+  it "should NOT allow absence of :url_prefix config" do
+    lambda { Deliveryboy::Plugins::UrlRewrite.new({ }) }.should raise_error
+  end
+
   it "should rewrite all <A> tags in HTML" do
     @normal_mail.add_part(@link_part)
     before_links = collect_html_elements(@normal_mail, 'a') {|a| a['href'] }

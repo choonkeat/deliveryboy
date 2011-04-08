@@ -11,6 +11,7 @@ class Deliveryboy::Plugins::UrlRewrite
   def initialize(config)
     @url_prefix = config[:url_prefix]
     @unsubscribe_url_prefix = config[:unsubscribe_url_prefix]
+    raise Exception.new(":url_prefix configuration is required for #{self.class}") if @url_prefix.blank?
   end
 
   def handle(mail, recipient)
