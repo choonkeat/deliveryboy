@@ -4,7 +4,7 @@ describe "Link Rewrites" do
 
   before(:each) do
     @url = "http://example.com/#{rand}"
-    @history = EmailHistory.create(:message_id => "#{rand}")
+    @history = FactoryGirl.create(:email_history)
   end
 
   describe "GET /links/*args/:link/:history/:activity" do

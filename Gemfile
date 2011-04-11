@@ -32,6 +32,7 @@ gem 'mysql2'
 gem 'nokogiri'
 gem 'uuid'
 gem 'json'
+gem 'kaminari'
 
 group :development, :test do
   gem 'rspec'

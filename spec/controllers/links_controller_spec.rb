@@ -4,7 +4,7 @@ describe LinksController do
 
   before(:each) do
     @link = Link.create(:url => "http://example.com/#{rand}")
-    @history = EmailHistory.create(:message_id => "#{rand}")
+    @history = FactoryGirl.create(:email_history)
   end
 
   after(:each) do
@@ -20,9 +20,14 @@ describe LinksController do
   end
 
   describe "GET 'unsubscribe'" do
-    it "should be successful" do
+    it "should add a BlockedList record for EmailHistory#to" do
+      @history.to.blocked_lists.should be_empty
       get 'unsubscribe', :args => ['x'], :link => @link.to_param, :history => @history.to_param
       response.should be_success
+      @history.reload
+      block = @history.to.blocked_lists.last
+      block.should_not be_nil
+      block.sender.should == @history.from.email
     end
   end
 

@@ -2,7 +2,7 @@ class EmailAddressesController < ApplicationController
   # GET /email_addresses
   # GET /email_addresses.xml
   def index
-    @email_addresses = EmailAddress.all
+    @email_addresses = EmailAddress.order('created_at DESC').page(params[:page])
 
     respond_to do |format|
       format.html # index.html.erb

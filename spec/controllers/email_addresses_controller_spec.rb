@@ -10,14 +10,6 @@ describe EmailAddressesController do
     @mock_email_address ||= mock_model(EmailAddress, stubs).as_null_object
   end
 
-  describe "GET index" do
-    it "assigns all email_addresses as @email_addresses" do
-      EmailAddress.stub(:all) { [mock_email_address] }
-      get :index
-      assigns(:email_addresses).should eq([mock_email_address])
-    end
-  end
-
   describe "GET show" do
     it "assigns the requested email_address as @email_address" do
       EmailAddress.stub(:find).with("37") { mock_email_address }

@@ -11,6 +11,18 @@ class LinksController < ApplicationController
   end
 
   def unsubscribe
+    if history = EmailHistory.find_by_unique(params[:history])
+      if archive = EmailArchive.find_by_message_id(history.message_id)
+        mail = Mail.new(archive.body)
+        sender = mail['List-ID'] ? mail['List-ID'].value : mail.froms.first
+      else
+        sender = history.from.email
+      end
+      history.to.blocked_lists.create :sender => sender
+    else
+      # preferably, not error out on such 404
+      logger.warn "EmailHistory unsubscribed, but not found - #{params[:history].inspect}"
+    end
   end
 
 end

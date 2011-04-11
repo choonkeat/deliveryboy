@@ -1,13 +1,21 @@
 class EmailHistoriesController < ApplicationController
   # GET /email_histories
   # GET /email_histories.xml
-  def index
-    @email_histories = EmailHistory.all
+  def index(klass = EmailHistory)
+    @email_histories = klass.order('created_at DESC').page(params[:page])
 
     respond_to do |format|
-      format.html # index.html.erb
+      format.html { render :action => 'index' }
       format.xml  { render :xml => @email_histories }
     end
+  end
+
+  def bounced
+    index(EmailHistory.bounced)
+  end
+
+  def visited
+    index(EmailHistory.visited)
   end
 
   # GET /email_histories/1

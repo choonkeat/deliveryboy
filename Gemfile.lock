@@ -55,6 +55,8 @@ GEM
     i18n (0.5.0)
     json (1.5.1)
     json_pure (1.5.1)
+    kaminari (0.10.4)
+      rails (>= 3.0.0)
     macaddr (1.0.0)
     mail (2.2.15)
       activesupport (>= 2.3.6)
@@ -119,6 +121,7 @@ DEPENDENCIES
   capybara
   factory_girl_rails (~> 1.1.beta1)
   json
+  kaminari
   mysql2
   nokogiri
   rails (= 3.0.5)

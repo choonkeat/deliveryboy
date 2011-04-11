@@ -10,14 +10,6 @@ describe EmailHistoriesController do
     @mock_email_history ||= mock_model(EmailHistory, stubs).as_null_object
   end
 
-  describe "GET index" do
-    it "assigns all email_histories as @email_histories" do
-      EmailHistory.stub(:all) { [mock_email_history] }
-      get :index
-      assigns(:email_histories).should eq([mock_email_history])
-    end
-  end
-
   describe "GET show" do
     it "assigns the requested email_history as @email_history" do
       EmailHistory.stub(:find).with("37") { mock_email_history }
