@@ -34,7 +34,9 @@ describe "Link Rewrites" do
       @history.visit_at.should be_nil
       @history.open_at.should be_nil
       get Link.rewrite('/', @url, @history, 'unsubscribe')
-      pending "subscribe need to be remembered and observed"
+      block = @history.to.blocked_lists.last
+      block.should_not be_nil
+      block.sender.should == @history.from.email
     end
   end
 end
