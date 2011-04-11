@@ -1,6 +1,6 @@
 source 'http://rubygems.org'
 
-gem 'rails', '3.0.5'
+gem 'rails', '3.0.6'
 
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
@@ -33,6 +33,7 @@ gem 'nokogiri'
 gem 'uuid'
 gem 'json'
 gem 'kaminari'
+gem 'jquery-rails', '>= 0.2.6'
 
 group :development, :test do
   gem 'rspec'
