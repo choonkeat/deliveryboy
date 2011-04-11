@@ -41,8 +41,10 @@ describe Deliveryboy::Plugins::UrlRewrite do
     @normal_mail.to_s.should == txt
   end
 
-  it "should NOT allow absence of :url_prefix config" do
-    lambda { Deliveryboy::Plugins::UrlRewrite.new({ }) }.should raise_error
+  it "should be no-op in absence of :url_prefix config" do
+    EmailHistory.stub(:where) { raise Exception.new("Unexpected EmailHistory#where called") }
+    Deliveryboy::Plugins::UrlRewrite.stub(:supplant!) { raise Exception.new("Unexpected Deliveryboy::Plugins::UrlRewrite#supplant! called") }
+    lambda { Deliveryboy::Plugins::UrlRewrite.new({}).handle(nil, nil).should_not == false }.should_not raise_error
   end
 
   it "should rewrite all <A> tags in HTML" do

@@ -2,6 +2,13 @@ maildirs:
 - maildir: /home/deliveryboy/Maildir
   plugins: 
   - script: deliveryboy/plugins/history
+    hard_bounce: 2592000
+    soft_bounce: 86400
+  - script: deliveryboy/plugins/newsletter
+    unsubscribe_url_prefix: http://deliveryboy.example.com
+  - script: deliveryboy/plugins/urlrewrite
+    url_prefix: http://deliveryboy.example.com
+    unsubscribe_url_prefix: http://deliveryboy.example.com
   - script: deliveryboy/plugins/archive
   - script: deliveryboy/plugins/mta
     class: Mail::SMTP

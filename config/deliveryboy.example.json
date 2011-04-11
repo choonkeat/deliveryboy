@@ -3,8 +3,25 @@
     {
       "maildir": "/home/deliveryboy/Maildir",
       "plugins": [
-        { "script": "deliveryboy/plugins/history" },
-        { "script": "deliveryboy/plugins/archive" },
+        { "script": "deliveryboy/plugins/history",
+          /* quarantine for 1 month */
+          "hard_bounce": 2592000,
+          /* quarantine for 1 day */
+          "soft_bounce": 86400
+        },
+        { "script": "deliveryboy/plugins/newsletter",
+          /* prefix for unsubscibe link, inserted into List-Unsubscribe header */
+          "unsubscribe_url_prefix": "http://deliveryboy.example.com"
+        },
+        { "script": "deliveryboy/plugins/urlrewrite",
+          /* urls will link here before redirecting to original link, for counting opens & visits */
+          "url_prefix": "http://deliveryboy.example.com",
+          /* re-written unsubscribe links will visit here */
+          "unsubscribe_url_prefix": "http://deliveryboy.example.com"
+        },
+        { "script": "deliveryboy/plugins/archive"
+          /* no config needed */
+        },
         { "script": "deliveryboy/plugins/mta",
           /* global settings */
           "class": "Mail::SMTP",
