@@ -10,6 +10,7 @@ Deliveryboy::Application.routes.draw do
   end
 
   resources :email_addresses
+  match 'apis(/:action(/:id(.:format)))', :controller => 'apis'
 
   # The priority is based upon order of creation:
   # first created -> highest priority.

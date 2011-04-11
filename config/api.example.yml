@@ -1,0 +1,2 @@
+# preferably a maildir that script/deliveryboy is monitoring
+outbox_maildir: "/home/deliveryboy/Maildir"
