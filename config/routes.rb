@@ -1,6 +1,8 @@
 Deliveryboy::Application.routes.draw do
   get "links/*args/:link/:history/unsubscribe" => "links#unsubscribe"
+  get "links/:link/:history/unsubscribe" => "links#unsubscribe", :args => []
   get "links/*args/:link/:history/:activity" => "links#visit"
+  get "links/:link/:history/:activity" => "links#visit", :args => []
 
   resources :email_histories do
     collection do
