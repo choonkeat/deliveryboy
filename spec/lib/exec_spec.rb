@@ -38,13 +38,13 @@ describe Deliveryboy::Plugins::Exec do
   end
 
   it "should write file to location and execute command on the file -- for every matched config" do
-    @plugin.handle(@normal_mail, @selected_recipient) do |email,match,path|
-      case email
-      when "from@testfrom.com"
+    @plugin.handle(@normal_mail, @selected_recipient) do |match,path|
+      case match
+      when "@testfrom.com"
         File.exists?(path).should be_true
         Mail.new(IO.read(path)).message_id.should == @normal_mail.message_id
         File.size(path).should > 0
-      when "to@testto.com"
+      when "@testto.com"
         File.exists?(path).should be_true
         File.size(path).should == 0 # if command ran, the file would now be 0-sized
       end

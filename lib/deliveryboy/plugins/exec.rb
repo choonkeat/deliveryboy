@@ -25,19 +25,19 @@ class Deliveryboy::Plugins::Exec
     matches = {:from => mail.froms, :to => (mail.to + [mail['X-Original-To']]).uniq.compact}.inject([]) do |sum,(key,emails)|
       emails.collect(&:to_s).inject(sum) do |s, email|
         if match = match_config_for(key, email)
-          s + [[email]+match]
+          s + [match]
         else
           s
         end
       end
     end.uniq.compact
-    matches.collect do |email,match,config|
+    matches.collect do |match,config|
       fullpath = Deliveryboy::Client.queue(mail.to_s, config[:maildir])
       logger.debug "[wrote] #{fullpath}"
       cmd = config[:cmdline] % fullpath
       logger.debug "[exec] #{cmd}"
       system(cmd)
-      yield email,match,fullpath if block_given? # only used for testing
+      yield match,fullpath if block_given? # only used for testing
       fullpath
     end
   end
