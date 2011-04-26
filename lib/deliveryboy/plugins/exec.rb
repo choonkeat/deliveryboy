@@ -23,7 +23,7 @@ class Deliveryboy::Plugins::Exec
 
   def handle(mail, recipient)
     matches = {:from => mail.froms, :to => (mail.to + [mail['X-Original-To']]).uniq.compact}.inject([]) do |sum,(key,emails)|
-      emails.inject(sum) do |s, email|
+      emails.collect(&:to_s).inject(sum) do |s, email|
         if match = match_config_for(key, email)
           s + [[email]+match]
         else
