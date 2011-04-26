@@ -22,6 +22,12 @@
         { "script": "deliveryboy/plugins/archive"
           /* no config needed */
         },
+        { "script": "deliveryboy/plugins/exec",
+          /* a maildir will be created and mail file will be written to "new" sub directory */
+          "maildir": "/tmp",
+          /* command will be executed, with the filename as %s */
+          "cmdline": "file %s"
+        },
         { "script": "deliveryboy/plugins/mta",
           /* global settings */
           "class": "Mail::SMTP",
