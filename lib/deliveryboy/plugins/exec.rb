@@ -9,11 +9,11 @@ class Deliveryboy::Plugins::Exec
 
   def initialize(config)
     @sorted_configs = [:from, :to].inject({}) do |sum, key|
-      options = config[key] || []
-      options.each do |k,opts|
+      options = (config[key] || []).inject({}) do |s,(k,opts)|
         ["new", "cur", "tmp", "err"].each {|subdir| FileUtils.mkdir_p(File.join(opts[:maildir], subdir))} # make a Maildir structure
-      end
-      sum.merge(key => options.sort_by {|(a,b)| a.length}.reverse)
+        s.merge(k.to_s => opts)
+      end.sort_by {|(a,b)| a.length}.reverse
+      sum.merge(key => options)
     end
   end
 

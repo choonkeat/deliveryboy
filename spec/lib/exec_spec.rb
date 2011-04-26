@@ -18,10 +18,10 @@ describe Deliveryboy::Plugins::Exec do
     @maildirpath = "#{Rails.root}/tmp/maildir-#{$$}"
     @plugin = Deliveryboy::Plugins::Exec.new({
       :to => {
-        "@testto.com" => {:maildir => @maildirpath, :cmdline => "dd if=/dev/null of=%s >/dev/null 2>&1"},
+        :"@testto.com" => {:maildir => @maildirpath, :cmdline => "dd if=/dev/null of=%s >/dev/null 2>&1"},
       },
       :from => {
-        "@testfrom.com" => {:maildir => @maildirpath, :cmdline => "file %s >/dev/null 2>&1"},
+        :"@testfrom.com" => {:maildir => @maildirpath, :cmdline => "file %s >/dev/null 2>&1"},
       },
     })
     @normal_mail = Mail.new(:from => 'Frommer <from@testfrom.com>', :to => 'Toer <to@testto.com>', :cc => 'Ccer <cc@testcc.com>', :bcc => 'Bccer <bcc@testbcc.com>', :subject => "Hello world", :message_id => FactoryGirl.attributes_for(:mail)[:message_id])
