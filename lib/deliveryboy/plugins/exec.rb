@@ -8,17 +8,37 @@ class Deliveryboy::Plugins::Exec
   include Deliveryboy::Loggable # to use "logger"
 
   def initialize(config)
-    @maildir = config[:maildir]
-    @cmdline = config[:cmdline]
-    ["new", "cur", "tmp", "err"].each {|subdir| FileUtils.mkdir_p(File.join(@maildir, subdir))} # make a Maildir structure
+    @sorted_configs = [:from, :to].inject({}) do |sum, key|
+      options = config[key] || []
+      options.each do |k,opts|
+        ["new", "cur", "tmp", "err"].each {|subdir| FileUtils.mkdir_p(File.join(opts[:maildir], subdir))} # make a Maildir structure
+      end
+      sum.merge(key => options.sort_by {|(a,b)| a.length}.reverse)
+    end
+  end
+
+  def match_config_for(key, email)
+    @sorted_configs[key].find {|(substring, hash)| email.index(substring) }
   end
 
   def handle(mail, recipient)
-    fullpath = Deliveryboy::Client.queue(mail.to_s, @maildir)
-    logger.debug "[wrote] #{fullpath}"
-    yield fullpath if block_given? # only used for testing
-    cmd = @cmdline % fullpath
-    logger.debug "[exec] #{cmd}"
-    system(cmd) && fullpath
+    matches = {:from => mail.froms, :to => (mail.to + [mail['X-Original-To']]).uniq.compact}.inject([]) do |sum,(key,emails)|
+      emails.inject(sum) do |s, email|
+        if match = match_config_for(key, email)
+          s + [[email]+match]
+        else
+          s
+        end
+      end
+    end.uniq.compact
+    matches.collect do |email,match,config|
+      fullpath = Deliveryboy::Client.queue(mail.to_s, config[:maildir])
+      logger.debug "[wrote] #{fullpath}"
+      cmd = config[:cmdline] % fullpath
+      logger.debug "[exec] #{cmd}"
+      system(cmd)
+      yield email,match,fullpath if block_given? # only used for testing
+      fullpath
+    end
   end
 end

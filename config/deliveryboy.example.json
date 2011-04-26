@@ -23,10 +23,14 @@
           /* no config needed */
         },
         { "script": "deliveryboy/plugins/exec",
-          /* a maildir will be created and mail file will be written to "new" sub directory */
-          "maildir": "/tmp",
-          /* command will be executed, with the filename as %s */
-          "cmdline": "file %s"
+          "to": {
+            "@special.com": {
+              /* a maildir will be created and mail file will be written to "new" sub directory */
+              "maildir": "/tmp",
+              /* command will be executed, with the filename as %s */
+              "cmdline": "file %s"
+            }
+          }
         },
         { "script": "deliveryboy/plugins/mta",
           /* global settings */

@@ -11,8 +11,10 @@ maildirs:
     unsubscribe_url_prefix: http://deliveryboy.example.com
   - script: deliveryboy/plugins/archive
   - script: deliveryboy/plugins/exec
-    maildir: /tmp
-    cmdline: file %s
+    to: 
+      "@special.com": 
+        maildir: /tmp
+        cmdline: file %s
   - script: deliveryboy/plugins/mta
     class: Mail::SMTP
     from: 
