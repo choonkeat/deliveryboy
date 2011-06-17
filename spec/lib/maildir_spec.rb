@@ -150,12 +150,23 @@ describe Deliveryboy::Maildir do
   context "message_id" do
     it "remain unchanged for first-recipient, appended with '-number' for subsequent recipients" do
       mail = Mail.new(IO.read("#{File.dirname(__FILE__)}/../fixtures/basic.eml"))
+      mail.message_id.should_not be_blank
       mail_file = File.join(@maildirpath, "new", "sample.eml")
       open(mail_file, "w") {|f| f.write(IO.read("#{File.dirname(__FILE__)}/../fixtures/basic.eml")) }
       @maildir.handle(@maildir.get_filename)
       Pluginmessageid.class_variable_get('@@message_ids').first.should == mail.message_id
       Pluginmessageid.class_variable_get('@@message_ids')[1] == mail.message_id + "-1"
       Pluginmessageid.class_variable_get('@@message_ids')[2] == mail.message_id + "-2"
+    end
+    it "should be generated when missing" do
+      mail = Mail.new(IO.read("#{File.dirname(__FILE__)}/../fixtures/nomessageid.eml"))
+      mail.message_id.should be_blank
+      mail_file = File.join(@maildirpath, "new", "sample.eml")
+      open(mail_file, "w") {|f| f.write(IO.read("#{File.dirname(__FILE__)}/../fixtures/basic.eml")) }
+      @maildir.handle(@maildir.get_filename)
+      Pluginmessageid.class_variable_get('@@message_ids')[0].should_not be_blank
+      Pluginmessageid.class_variable_get('@@message_ids')[1].should_not be_blank
+      Pluginmessageid.class_variable_get('@@message_ids')[2].should_not be_blank
     end
   end
 

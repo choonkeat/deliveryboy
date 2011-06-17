@@ -1,0 +1,11 @@
+Date: Thu, 16 Jun 2011 15:27:24 -0500
+From: Sender <sender@testhost.com>
+To: R1 <recipient1@testrec.com>,
+ R2 <recipient2@testrec.com>,
+ R3 <recipient3@testrec.com>
+Subject: Hello
+Mime-Version: 1.0
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
+
+World
