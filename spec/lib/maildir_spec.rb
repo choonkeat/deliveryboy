@@ -23,6 +23,7 @@ describe Deliveryboy::Maildir do
         { :script => "deliveryboy/plugins/noop" },
         { :script => "#{File.dirname(__FILE__)}/../fixtures/plugin1" },
         { :script => "#{File.dirname(__FILE__)}/../fixtures/plugin2" },
+        { :script => "#{File.dirname(__FILE__)}/../fixtures/pluginmessageid" },
       ]
     }
     @maildir = Deliveryboy::Maildir.new(@maildir_config)
@@ -143,6 +144,18 @@ describe Deliveryboy::Maildir do
         File.exists?(mail_file).should be_false
         File.exists?(File.join(@maildirpath, "err", "sample.eml")).should be_false
       end
+    end
+  end
+
+  context "message_id" do
+    it "remain unchanged for first-recipient, appended with '-number' for subsequent recipients" do
+      mail = Mail.new(IO.read("#{File.dirname(__FILE__)}/../fixtures/basic.eml"))
+      mail_file = File.join(@maildirpath, "new", "sample.eml")
+      open(mail_file, "w") {|f| f.write(IO.read("#{File.dirname(__FILE__)}/../fixtures/basic.eml")) }
+      @maildir.handle(@maildir.get_filename)
+      Pluginmessageid.class_variable_get('@@message_ids').first.should == mail.message_id
+      Pluginmessageid.class_variable_get('@@message_ids')[1] == mail.message_id + "-1"
+      Pluginmessageid.class_variable_get('@@message_ids')[2] == mail.message_id + "-2"
     end
   end
 

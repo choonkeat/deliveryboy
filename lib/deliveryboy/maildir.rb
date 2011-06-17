@@ -27,7 +27,7 @@ module Deliveryboy
         logger.debug "recipient: #{recipient.inspect} ..."
         mail = (index == 0 ? mailobj : Mail.new(mailtxt))
         mail.to_s unless mail.has_message_id? # generate unique message_id if absent
-        mail.message_id = "#{mail.message_id}-#{index}"
+        mail.message_id = "#{mail.message_id}-#{index}" unless index == 0
         @plugins.each do |plugin|
           break if plugin.handle(mail, recipient) == false
           # callback chain is broken when one plugin returns false
