@@ -87,6 +87,26 @@ describe Deliveryboy::Plugins::History do
       @history.reload
       @history.to.allow_to_since.to_i.should >= @hard_bounce.since(@now).to_i
     end
+    it "should apply custom penalty to customized recipient for soft bounce" do
+      @plugin.instance_variable_get('@config').merge!({
+        :custom => {
+          :"999" => [@selected_recipient]
+        }
+      })
+      @plugin.handle(@soft_bounced_mail, "not used").should_not == false
+      @history.reload
+      @history.to.allow_to_since.to_i.should >= 999.since(@now).to_i
+    end
+    it "should apply custom penalty to customized recipient for hard bounce" do
+      @plugin.instance_variable_get('@config').merge!({
+        :custom => {
+          :"999" => [@selected_recipient]
+        }
+      })
+      @plugin.handle(@hard_bounced_mail, "not used").should_not == false
+      @history.reload
+      @history.to.allow_to_since.to_i.should >= 999.since(@now).to_i
+    end
     it "should remember the message_id of the bounce when penalized" do
       @plugin.handle(@soft_bounced_mail, "not used").should_not == false
       @history.reload

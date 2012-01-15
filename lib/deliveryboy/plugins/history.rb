@@ -14,6 +14,7 @@ class Deliveryboy::Plugins::History
     @config = config.reverse_merge({
       :hard_bounce => 1.month,
       :soft_bounce => 1.day,
+      :custom => {},
     })
   end
 
@@ -40,7 +41,15 @@ class Deliveryboy::Plugins::History
       EmailHistory.transaction do
         histories.each do |history|
           history.update_attributes(history_update)
-          unless currently_more_severe = history.to.allow_to_since.to_i >= to_update[:allow_to_since].to_i
+          if currently_more_severe = history.to.allow_to_since.to_i >= to_update[:allow_to_since].to_i
+            logger.debug "[history] SKIP #{bounce_type} bounced penalty #{history.to.email} (convicted)"
+          elsif custom = @config[:custom].find {|duration,emails| emails.include?(history.to.email) }
+            duration = custom.first.to_s.to_i
+            logger.debug "[history] CUSTOM #{bounce_type} bounced penalty (#{duration}) #{history.to.email} (customized)"
+            history.to.update_attributes(to_update.merge(
+              :allow_to_since => duration.since(time_now),
+            ))
+          else
             logger.debug "[history] #{bounce_type} bounced penalty #{history.to.email}"
             history.to.update_attributes(to_update)
           end
